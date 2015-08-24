@@ -20,7 +20,7 @@ layout: home
             </li>
         {% endfor %}
         </ul>
-		### 丁丁宝贝，要准备做前端 了！~~ 
+		###丁丁宝贝，要准备做前端 了！~~ 
     </div>
     <div class="aside">
     </div>
