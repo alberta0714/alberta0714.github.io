@@ -1,3 +1,6 @@
+---
+layout: home
+---
 # 搜索整合方案研究
 ## 一、概述
 &emsp;&emsp;目前程序通过统一的入口UniSearchServlet进入后，根据projectId走PCLineSearchHandler，MobileSearchHandler两大流程。每个流量，再通去获取不同的索引数据。  
