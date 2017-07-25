@@ -1,1 +1,0 @@
-select .form-control i{right:30px;}
