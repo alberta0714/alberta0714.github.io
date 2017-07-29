@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      smallTalkArticle
+title:      来自smalltalk目录内部
 category: smalltalk
 description: 写博客这个这么古老的行为，还有必要拿出来说吗，我看有!!
 ---
