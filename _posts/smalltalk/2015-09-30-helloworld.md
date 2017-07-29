@@ -1,20 +1,13 @@
 ---
 layout:     post
-title:      写点儿关于心理的
-categories: smalltalk
+title:      smallTalkArticle
 category: smalltalk
-description: 生活在北京这样的大城市,除了工作,还有生活吗?
-tags: 我的工作任务
-pageid: tk
-permalink:/smalltalk/tk.html
-published: true
+description: 写博客这个这么古老的行为，还有必要拿出来说吗，我看有!!
 ---
 
-## 感谢
+## 世界这么乱，装纯给谁看
 
-生活在了北京这样的大城市,很快就7年多!有的时候,走在街道上,心中充满了迷茫感. 这座城市,除了工作还有什么?
-
-
+写博客这个不知道几个“互联网世纪”前的东西，现在还有必要拿出来说吗？不想用太多的理论去说这个命题，先看看两个最近对我影响比较大的两个博客：
 
 * [Steve Losh][]
 * [Derek Sivers][]

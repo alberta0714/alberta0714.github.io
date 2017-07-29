@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
+    <title>{% if page.title %}{{ page.title }}{% endif %} - {{ site.title }}</title>
     <meta name="author" content="Albert.Sun." />
     <meta name="renderer" content="webkit">
     <meta name="description" content="Albert.Sun.'s Blog" />
@@ -21,7 +21,7 @@
             <li style="text-align:left" id="nav_tec" class=""><a href="/tec"><span>技术</span></a></li>
 			<i style="text-align:left" id="nav_beiyuu" class=""><a target="_blank" href="http://beiyuu.com/"><span>beiyuu</span></a> </a></li>
         </ul>
-		-->
+
 		<script>
 			$(function(){
 				$($("#nav_bar").children()).each(function(index){
@@ -35,6 +35,7 @@
 				}
 			});
 		</script>
+		-->
 		{{ content }}
     </div>
 </div>
