@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="d9b516d3-5a46-42a9-841f-293296d3e5f4" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/alberta0714.github.io.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2017/04/18/Design-Patterns-Proxy/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2017/04/18/hexo+github pages/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2017/04/22/mybatis-mapper/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2017/04/25/DecorateAndProxy/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2017/05/14/linux-deploy/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2017/05/31/SpringIOC/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2017/06/10/SpringMVC-container/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2017/08/20/HashMap/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2017/08/31/HashSet和TreeSet/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2017/11/02/《深入理解Java虚拟机》之Java内存区域/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2017/11/05/《深入理解Java虚拟机》之GC/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2017/11/07/《深入理解Java虚拟机》之 类加载机制/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2017/11/09/《深入理解Java虚拟机》之 字节码执行引擎/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2018/04/16/BlockingQueue/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2018/04/27/ThreadPoolExecutor/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2018/10/09/SpringBoot源码解析一/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2018/10/26/ConstantPool/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2018/10/27/SpringBoot源码解析二/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2018/11/21/SkyWalking使用指南/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2018/11/26/SkyWalking-Agent源码浅析/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2018/11/27/SkyWalking-Collector源码浅析/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2019/01/12/Zookeeper-Session机制/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2019/01/12/Zookeeper-Watcher机制/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2019/01/12/Zookeeper-ZAB协议/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2019/01/12/Zookeeper-客户端和服务端/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2019/02/19/Netty-入门使用总结/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2019/03/22/Java并发编程之synchronized/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2019/03/26/Java并发编程之volatile/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2019/04/09/InnoDB-B-树索引/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2019/05/07/InnoDB-redo-log/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2019/05/07/InnoDB-undo-log/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2019/09/26/Netty源码-服务端启动/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2019/09/27/Netty源码-Reactor线程启动及执行/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2019/09/27/Netty源码-客户端启动/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/404.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/about/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apple-touch-icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2017/04/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2017/05/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2017/06/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2017/08/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2017/11/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2017/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2017/page/2/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2018/04/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2018/10/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2018/11/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2018/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2019/01/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2019/02/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2019/03/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2019/04/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2019/05/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2019/09/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2019/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/2019/page/2/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/page/2/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/page/3/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/archives/page/4/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/categories/JAVASE/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/categories/JVM/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/categories/Netty/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/categories/SkyWalking/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/categories/Spring/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/categories/SpringBoot/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/categories/SpringMVC/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/categories/Zookeeper/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/categories/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/categories/linux/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/categories/mybatis/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/categories/工具使用/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/categories/数据库/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/categories/设计模式/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/css/main.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/AcFun.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/algolia_logo.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/avatar.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/cc-by-nc-nd.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/cc-by-nc-sa.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/cc-by-nc.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/cc-by-nd.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/cc-by-sa.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/cc-by.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/cc-zero.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/loading.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/placeholder.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/quote-l.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/quote-r.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/searchicon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/Design Patterns/proxy.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/HashMap/hashmap.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/JVM-Note/engine1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/JVM-Note/gc1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/JVM-Note/gc2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/JVM-Note/gc3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/JVM-Note/gc4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/JVM-Note/memory-area-1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/JVM-Note/memory-area-2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/JVM-Note/memory-area-3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SkyWalking/dir.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SkyWalking/ui.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/AbstractApplicationContext-finishBeanFactoryInitialization.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/AbstractApplicationContext-obtainFreshBeanFactory.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/AbstractApplicationContext-refresh.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/AbstractAutowireCapableBeanFactory.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/AbstractBeanDefinitionReader.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/AbstractBeanFactory-doGetBean1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/AbstractBeanFactory-doGetBean2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/AbstractRefreshableApplicationContext-refreshBeanFactory.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/AutowiredAnnotationBeanPostProcessor.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/ClassPathBeanDefinitionScanner-doScan.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/ComponentScanBeanDefinitionParser-parse.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/ContextLoader-determineContextClass.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/ContextLoader-initWebApplicationContext.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/ContextLoader-static.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/ContextLoader.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/ContextLoaderListener.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/DefaultBeanDefinitionDocumentReader-doRegisterBeanDefinitions.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/DefaultBeanDefinitionDocumentReader-parseBeanDefinitions.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/DefaultListableBeanFactory-preInstantiateSingletons.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/DefaultSingletonBeanRegistry-getSingleton.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/InjectionElement.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/InjectionMetadata.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/PathMatchingResourcePatternResolver-getResources.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/XmlWebApplicationContext.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/doFindAllClassPathResources.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/findAllClassPathResources.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/findCandidateComponents.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/findPathMatchingResources.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringIOC/getResources.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringMVC/DispatcherServlet-initHandlerMappings.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringMVC/DispatcherServlet-onRefresh.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringMVC/DispatcherServletClass.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringMVC/initWebApplicationContext1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/SpringMVC/initWebApplicationContext2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/ThreadPoolExecutor/ThreadPoolExecutor-runstate.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/linux-deploy/1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/linux-deploy/2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/mybatis-mapper/ClassPathMapperScanner.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/mybatis-mapper/ClassPathMapperScanner2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/mybatis-mapper/ClassPathMapperScanner3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/mybatis-mapper/Configuration.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/mybatis-mapper/DaoSupport.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/mybatis-mapper/MapperFactoryBean.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/mybatis-mapper/MapperFactoryBean2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/mybatis-mapper/MapperMethod.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/mybatis-mapper/MapperProxy.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/mybatis-mapper/MapperProxyFactory.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/mybatis-mapper/MapperRegistry.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/mybatis-mapper/MapperRegistry2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/mybatis-mapper/MapperScannerConfigurer.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/mybatis-mapper/SqlSessionTemplate.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/src/affix.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/src/algolia-search.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/src/bootstrap.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/src/exturl.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/src/hook-duoshuo.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/src/js.cookie.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/src/motion.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/src/post-details.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/src/schemes/pisces.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/src/scroll-cookie.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/src/scrollspy.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/src/utils.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/Han/dist/font/han-space.otf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/Han/dist/font/han-space.woff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/Han/dist/font/han.otf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/Han/dist/font/han.woff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/Han/dist/han.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/Han/dist/han.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/Han/dist/han.min.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/Han/dist/han.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/algolia-instant-search/instantsearch.min.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/algolia-instant-search/instantsearch.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/canvas-nest/canvas-nest.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/canvas-ribbon/canvas-ribbon.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fancybox/source/blank.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fancybox/source/fancybox_loading.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fancybox/source/fancybox_loading@2x.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fancybox/source/fancybox_overlay.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fancybox/source/fancybox_sprite.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fancybox/source/fancybox_sprite@2x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fancybox/source/helpers/fancybox_buttons.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fancybox/source/helpers/jquery.fancybox-buttons.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fancybox/source/helpers/jquery.fancybox-buttons.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fancybox/source/helpers/jquery.fancybox-media.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fancybox/source/helpers/jquery.fancybox-thumbs.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fancybox/source/helpers/jquery.fancybox-thumbs.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fancybox/source/jquery.fancybox.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fancybox/source/jquery.fancybox.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fancybox/source/jquery.fancybox.pack.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fastclick/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fastclick/README.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fastclick/bower.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fastclick/lib/fastclick.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/fastclick/lib/fastclick.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/font-awesome/HELP-US-OUT.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/font-awesome/bower.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/font-awesome/css/font-awesome.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/font-awesome/css/font-awesome.css.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/font-awesome/css/font-awesome.min.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/font-awesome/fonts/FontAwesome.otf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/font-awesome/fonts/fontawesome-webfont.eot" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/font-awesome/fonts/fontawesome-webfont.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/font-awesome/fonts/fontawesome-webfont.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/font-awesome/fonts/fontawesome-webfont.woff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/font-awesome/fonts/fontawesome-webfont.woff2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/jquery/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/jquery_lazyload/CONTRIBUTING.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/jquery_lazyload/README.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/jquery_lazyload/bower.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/jquery_lazyload/jquery.lazyload.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/jquery_lazyload/jquery.scrollstop.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/three/canvas_lines.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/three/canvas_sphere.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/three/three-waves.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/three/three.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ua-parser-js/dist/ua-parser.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ua-parser-js/dist/ua-parser.pack.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/velocity/bower.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/velocity/velocity.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/velocity/velocity.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/velocity/velocity.ui.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/velocity/velocity.ui.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/page/2/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/page/3/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/page/4/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/B-树/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/InnoDB/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/JVM/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/MySQL/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/NIO/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/Netty/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/Reactor/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/SkyWalking/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/Spring/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/SpringBoot/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/SpringMVC/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/String/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/Thread/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/Zookeeper/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/java8/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/linux/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/mybatis/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/queue/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/set/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/代理/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/分布式/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/多线程/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/工具使用/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/并发编程/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/设计模式/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tags/集合类/index.html" beforeDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/index.html" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="293" />
+    <option name="y" value="200" />
+    <option name="width" value="1400" />
+    <option name="height" value="1000" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="alberta0714.github.io" type="b2602c69:ProjectViewProjectNode" />
+              <item name="alberta0714.github.io" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d9b516d3-5a46-42a9-841f-293296d3e5f4" name="Default Changelist" comment="" />
+      <created>1573527424322</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1573527424322</updated>
+      <workItem from="1573527426985" duration="737000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="737000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <layout>
+      <window_info id="Image Layers" />
+      <window_info id="Designer" />
+      <window_info id="UI Designer" />
+      <window_info id="Capture Tool" />
+      <window_info id="Favorites" side_tool="true" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Database Changes" />
+      <window_info anchor="bottom" id="Version Control" />
+      <window_info anchor="bottom" id="Terminal" />
+      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="right" id="Palette" />
+      <window_info anchor="right" id="Theme Preview" />
+      <window_info anchor="right" id="Maven" />
+      <window_info anchor="right" id="Capture Analysis" />
+      <window_info anchor="right" id="Palette&#9;" />
+      <window_info anchor="right" id="SciView" />
+      <window_info anchor="right" id="Database" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tags/Netty/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="309">
+          <caret line="363" column="4" lean-forward="true" selection-start-line="363" selection-start-column="4" selection-end-line="363" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tags/mybatis/index.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/page/2/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="518">
+          <caret line="37" column="43" selection-start-line="37" selection-start-column="43" selection-end-line="37" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/algolia-instant-search/instantsearch.min.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="49" selection-start-column="49" selection-end-column="49" />
+          <folding>
+            <element signature="e#342#3381#2" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/2019/01/12/Zookeeper-Session机制/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="14">
+          <caret line="31" lean-forward="true" selection-start-line="31" selection-end-line="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/2017/05/14/linux-deploy/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/algolia-instant-search/instantsearch.min.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>
