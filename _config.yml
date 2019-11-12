@@ -1,0 +1,13 @@
+auto: true
+
+markdown: rdiscount
+pygments: true
+paginate: 8
+permalink: /:title
+
+title: Albert.Sun.
+url: http://alberta0714.github.com/
+feed: /atom.xml
+author_info: <a href="http://alberta0714.github.io/">Albert.Sun.</a>
+
+paginate: 3
