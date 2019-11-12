@@ -1,0 +1,791 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="SkyWalking,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/apple-touch-icon.png?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="SkyWalking Agent 入口SkyWalking Agent 采用 JavaAgent 机制，其相关原理可自行 google。SkyWalking Agent 入口在 org.apache.skywalking.apm.agent.SkyWalkingAgent 的 premain() 方法。主要看以下三行代码:">
+<meta name="keywords" content="SkyWalking">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SkyWalking Agent源码浅析">
+<meta property="og:url" content="http://yoursite.com/2018/11/26/SkyWalking-Agent源码浅析/index.html">
+<meta property="og:site_name" content="小白爬坑之旅">
+<meta property="og:description" content="SkyWalking Agent 入口SkyWalking Agent 采用 JavaAgent 机制，其相关原理可自行 google。SkyWalking Agent 入口在 org.apache.skywalking.apm.agent.SkyWalkingAgent 的 premain() 方法。主要看以下三行代码:">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-27T08:36:35.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SkyWalking Agent源码浅析">
+<meta name="twitter:description" content="SkyWalking Agent 入口SkyWalking Agent 采用 JavaAgent 机制，其相关原理可自行 google。SkyWalking Agent 入口在 org.apache.skywalking.apm.agent.SkyWalkingAgent 的 premain() 方法。主要看以下三行代码:">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/11/26/SkyWalking-Agent源码浅析/">
+
+
+
+
+
+  <title>SkyWalking Agent源码浅析 | 小白爬坑之旅</title>
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小白爬坑之旅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/26/SkyWalking-Agent源码浅析/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lollipop">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/AcFun.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小白爬坑之旅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                SkyWalking Agent源码浅析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-26T21:24:06+08:00">
+                2018-11-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/SkyWalking/" itemprop="url" rel="index">
+                    <span itemprop="name">SkyWalking</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="SkyWalking-Agent-入口"><a href="#SkyWalking-Agent-入口" class="headerlink" title="SkyWalking Agent 入口"></a>SkyWalking Agent 入口</h1><p>SkyWalking Agent 采用 JavaAgent 机制，其相关原理可自行 google。<br>SkyWalking Agent 入口在 org.apache.skywalking.apm.agent.SkyWalkingAgent 的 premain() 方法。主要看以下三行代码:<a id="more"></a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 初始化配置</span></span><br><span class="line">SnifferConfigInitializer.initialize(agentArgs);</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 初始化插件</span></span><br><span class="line">pluginFinder = <span class="keyword">new</span> PluginFinder(<span class="keyword">new</span> PluginBootstrap().loadPlugins());</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 初始化服务管理</span></span><br><span class="line">ServiceManager.INSTANCE.boot();</span><br></pre></td></tr></table></figure>
+<h2 id="初始化配置"><a href="#初始化配置" class="headerlink" title="初始化配置"></a>初始化配置</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">initialize</span><span class="params">(String agentOptions)</span> <span class="keyword">throws</span> ConfigNotFoundException, AgentPackageNotFoundException </span>&#123;</span><br><span class="line">    InputStreamReader configFileStream;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 读取配置文件，默认配置文件 /config/agent.config</span></span><br><span class="line">        configFileStream = loadConfig();</span><br><span class="line">        Properties properties = <span class="keyword">new</span> Properties();</span><br><span class="line">        <span class="comment">// 加载配置文件</span></span><br><span class="line">        properties.load(configFileStream);</span><br><span class="line">        <span class="comment">// 用配置文件内容初始化 Config 类</span></span><br><span class="line">        ConfigInitializer.initialize(properties, Config.class);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        logger.error(e, <span class="string">"Failed to read the config file, skywalking is going to run in default config."</span>);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 用系统环境变量去覆盖配置</span></span><br><span class="line">        overrideConfigBySystemEnv();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        logger.error(e, <span class="string">"Failed to read the system env."</span>);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (!StringUtil.isEmpty(agentOptions)) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            agentOptions = agentOptions.trim();</span><br><span class="line">            logger.info(<span class="string">"Agent options is &#123;&#125;."</span>, agentOptions);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 用 agentOptions 去覆盖配置</span></span><br><span class="line">            overrideConfigByAgentOptions(agentOptions);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            logger.error(e, <span class="string">"Failed to parse the agent options, val is &#123;&#125;."</span>, agentOptions);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (StringUtil.isEmpty(Config.Agent.APPLICATION_CODE)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ExceptionInInitializerError(<span class="string">"`agent.application_code` is missing."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (StringUtil.isEmpty(Config.Collector.BACKEND_SERVICE)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ExceptionInInitializerError(<span class="string">"`collector.direct_servers` and `collector.servers` cannot be empty at the same time."</span>);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    IS_INIT_COMPLETED = <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该方法主要是读取配置文件（默认为 /config/agent.config）内容，初始化 Config 类，若含有相关系统关键变量或 agent 参数可覆盖配置文件的内容。</p>
+<h2 id="初始化插件"><a href="#初始化插件" class="headerlink" title="初始化插件"></a>初始化插件</h2><p>SkyWalking Agent 提供了多种插件，实现不同框架的透明接入 SkyWalking。</p>
+<h3 id="PluginBootstrap"><a href="#PluginBootstrap" class="headerlink" title="PluginBootstrap"></a>PluginBootstrap</h3><p>PluginBootstrap 为插件引导程序类，创建需要加载的插件对象数组。其 loadPlugins() 方法代码如下:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> List&lt;AbstractClassEnhancePluginDefine&gt; <span class="title">loadPlugins</span><span class="params">()</span> <span class="keyword">throws</span> AgentPackageNotFoundException </span>&#123;</span><br><span class="line">    <span class="comment">// 初始化 AgentClassLoader，它负责负责寻找插件和拦截器</span></span><br><span class="line">    AgentClassLoader.initDefaultLoader();</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// 获得插件定义路径集合</span></span><br><span class="line">    PluginResourcesResolver resolver = <span class="keyword">new</span> PluginResourcesResolver();</span><br><span class="line">    List&lt;URL&gt; resources = resolver.getResources();</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (resources == <span class="keyword">null</span> || resources.size() == <span class="number">0</span>) &#123;</span><br><span class="line">        logger.info(<span class="string">"no plugin files (skywalking-plugin.def) found, continue to start application."</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ArrayList&lt;AbstractClassEnhancePluginDefine&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// 创建插件定义</span></span><br><span class="line">    <span class="keyword">for</span> (URL pluginUrl : resources) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            PluginCfg.INSTANCE.load(pluginUrl.openStream());</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">            logger.error(t, <span class="string">"plugin file [&#123;&#125;] init failure."</span>, pluginUrl);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// 获得插件定义集合</span></span><br><span class="line">    List&lt;PluginDefine&gt; pluginClassList = PluginCfg.INSTANCE.getPluginClassList();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 创建类增强插件定义集合</span></span><br><span class="line">    List&lt;AbstractClassEnhancePluginDefine&gt; plugins = <span class="keyword">new</span> ArrayList&lt;AbstractClassEnhancePluginDefine&gt;();</span><br><span class="line">    <span class="keyword">for</span> (PluginDefine pluginDefine : pluginClassList) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            logger.debug(<span class="string">"loading plugin class &#123;&#125;."</span>, pluginDefine.getDefineClass());</span><br><span class="line">            AbstractClassEnhancePluginDefine plugin =</span><br><span class="line">                (AbstractClassEnhancePluginDefine)Class.forName(pluginDefine.getDefineClass(),</span><br><span class="line">                    <span class="keyword">true</span>,</span><br><span class="line">                    AgentClassLoader.getDefault())</span><br><span class="line">                    .newInstance();</span><br><span class="line">            plugins.add(plugin);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">            logger.error(t, <span class="string">"load plugin [&#123;&#125;] failure."</span>, pluginDefine.getDefineClass());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> plugins;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="PluginFinder"><a href="#PluginFinder" class="headerlink" title="PluginFinder"></a>PluginFinder</h3><p>PluginFinder 作为一个插件查找器，帮助从一个类增强插件定义集合中查找一个插件。其相关代码如下:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, LinkedList&lt;AbstractClassEnhancePluginDefine&gt;&gt; nameMatchDefine = <span class="keyword">new</span> HashMap&lt;String, LinkedList&lt;AbstractClassEnhancePluginDefine&gt;&gt;();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> List&lt;AbstractClassEnhancePluginDefine&gt; signatureMatchDefine = <span class="keyword">new</span> LinkedList&lt;AbstractClassEnhancePluginDefine&gt;();</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">PluginFinder</span><span class="params">(List&lt;AbstractClassEnhancePluginDefine&gt; plugins)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (AbstractClassEnhancePluginDefine plugin : plugins) &#123;</span><br><span class="line">        ClassMatch match = plugin.enhanceClass();</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">if</span> (match == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// 处理 NameMatch 为匹配的 AbstractClassEnhancePluginDefine 对象，添加到 `nameMatchDefine` 属性。</span></span><br><span class="line">        <span class="keyword">if</span> (match <span class="keyword">instanceof</span> NameMatch) &#123;</span><br><span class="line">            NameMatch nameMatch = (NameMatch)match;</span><br><span class="line">            LinkedList&lt;AbstractClassEnhancePluginDefine&gt; pluginDefines = nameMatchDefine.get(nameMatch.getClassName());</span><br><span class="line">            <span class="keyword">if</span> (pluginDefines == <span class="keyword">null</span>) &#123;</span><br><span class="line">                pluginDefines = <span class="keyword">new</span> LinkedList&lt;AbstractClassEnhancePluginDefine&gt;();</span><br><span class="line">                nameMatchDefine.put(nameMatch.getClassName(), pluginDefines);</span><br><span class="line">            &#125;</span><br><span class="line">            pluginDefines.add(plugin);</span><br><span class="line">        &#125; </span><br><span class="line">        <span class="comment">// 处理非 NameMatch 为匹配的 AbstractClassEnhancePluginDefine 对象，添加到 `signatureMatchDefine` 属性。</span></span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            signatureMatchDefine.add(plugin);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="初始化服务管理"><a href="#初始化服务管理" class="headerlink" title="初始化服务管理"></a>初始化服务管理</h2><p>ServiceManager.INSTANCE.boot() 方法初始化所有的 BootService 实现。并进行其准备阶段逻辑、启动阶段逻辑、完成阶段逻辑。详见下文。</p>
+<h1 id="ServiceManager"><a href="#ServiceManager" class="headerlink" title="ServiceManager"></a>ServiceManager</h1><p>ServiceManager 作为 BootService 管理器，负责初始化所有的 BootService 实现。并进行其准备阶段逻辑、启动阶段逻辑、完成阶段逻辑。<br>其相关代码如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> Map&lt;Class, BootService&gt; bootedServices = Collections.emptyMap();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">boot</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 加载所有 bootService</span></span><br><span class="line">    bootedServices = loadAllServices();</span><br><span class="line">    <span class="comment">// 准备逻辑</span></span><br><span class="line">    prepare();</span><br><span class="line">    <span class="comment">// 启动逻辑</span></span><br><span class="line">    startup();</span><br><span class="line">    <span class="comment">// 完成逻辑</span></span><br><span class="line">    onComplete();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 加载所有的 BootService</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> org.apache.skywalking.apm.agent.core.remote.TraceSegmentServiceClient&#125;</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> org.apache.skywalking.apm.agent.core.context.ContextManager&#125;</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> org.apache.skywalking.apm.agent.core.sampling.SamplingService&#125;</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> org.apache.skywalking.apm.agent.core.remote.GRPCChannelManager&#125;</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> org.apache.skywalking.apm.agent.core.jvm.JVMService&#125;</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> org.apache.skywalking.apm.agent.core.remote.AppAndServiceRegisterClient&#125;</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> org.apache.skywalking.apm.agent.core.context.ContextManagerExtendService&#125;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> bootedServices</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> Map&lt;Class, BootService&gt; <span class="title">loadAllServices</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Map&lt;Class, BootService&gt; bootedServices = <span class="keyword">new</span> LinkedHashMap&lt;Class, BootService&gt;();</span><br><span class="line">    List&lt;BootService&gt; allServices = <span class="keyword">new</span> LinkedList&lt;BootService&gt;();</span><br><span class="line">    <span class="comment">// 加载所有的 bootService</span></span><br><span class="line">    load(allServices);</span><br><span class="line">    Iterator&lt;BootService&gt; serviceIterator = allServices.iterator();</span><br><span class="line">    <span class="keyword">while</span> (serviceIterator.hasNext()) &#123;</span><br><span class="line">        BootService bootService = serviceIterator.next();</span><br><span class="line"></span><br><span class="line">        Class&lt;? extends BootService&gt; bootServiceClass = bootService.getClass();</span><br><span class="line">        <span class="comment">// 该 bootService 上有 DefaultImplementor 注解则添加</span></span><br><span class="line">        <span class="keyword">boolean</span> isDefaultImplementor = bootServiceClass.isAnnotationPresent(DefaultImplementor.class);</span><br><span class="line">        <span class="keyword">if</span> (isDefaultImplementor) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!bootedServices.containsKey(bootServiceClass)) &#123;</span><br><span class="line">                bootedServices.put(bootServiceClass, bootService);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">//ignore the default service</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            OverrideImplementor overrideImplementor = bootServiceClass.getAnnotation(OverrideImplementor.class);</span><br><span class="line">            <span class="comment">// 该 bootService 上没有 DefaultImplementor 注解但是也没有 OverrideImplementor 注解，也添加</span></span><br><span class="line">            <span class="keyword">if</span> (overrideImplementor == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (!bootedServices.containsKey(bootServiceClass)) &#123;</span><br><span class="line">                    bootedServices.put(bootServiceClass, bootService);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> ServiceConflictException(<span class="string">"Duplicate service define for :"</span> + bootServiceClass);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 该 bootService 上没有 DefaultImplementor 注解，有 OverrideImplementor 注解</span></span><br><span class="line">                <span class="comment">// 如果 OverrideImplementor 注解的 value 表明的 bootService 上有 DefaultImplementor 注解，也添加</span></span><br><span class="line">                Class&lt;? extends BootService&gt; targetService = overrideImplementor.value();</span><br><span class="line">                <span class="keyword">if</span> (bootedServices.containsKey(targetService)) &#123;</span><br><span class="line">                    <span class="keyword">boolean</span> presentDefault = bootedServices.get(targetService).getClass().isAnnotationPresent(DefaultImplementor.class);</span><br><span class="line">                    <span class="keyword">if</span> (presentDefault) &#123;</span><br><span class="line">                        bootedServices.put(targetService, bootService);</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="keyword">throw</span> <span class="keyword">new</span> ServiceConflictException(<span class="string">"Service "</span> + bootServiceClass + <span class="string">" overrides conflict, "</span> +</span><br><span class="line">                            <span class="string">"exist more than one service want to override :"</span> + targetService);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    bootedServices.put(targetService, bootService);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> bootedServices;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 遍历 bootedServices，执行各个 bootService 的准备阶段逻辑，startup、onComplete、shutdown 均与此类似。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">prepare</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (BootService service : bootedServices.values()) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            service.prepare();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">            logger.error(e, <span class="string">"ServiceManager try to pre-start [&#123;&#125;] fail."</span>, service.getClass().getName());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> &lt;T extends BootService&gt; <span class="function">T <span class="title">findService</span><span class="params">(Class&lt;T&gt; serviceClass)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (T)bootedServices.get(serviceClass);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据 ServiceLoader 去加载 bootService</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">load</span><span class="params">(List&lt;BootService&gt; allServices)</span> </span>&#123;</span><br><span class="line">    Iterator&lt;BootService&gt; iterator = ServiceLoader.load(BootService.class, AgentClassLoader.getDefault()).iterator();</span><br><span class="line">    <span class="keyword">while</span> (iterator.hasNext()) &#123;</span><br><span class="line">        allServices.add(iterator.next());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="BootService"><a href="#BootService" class="headerlink" title="BootService"></a>BootService</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BootService</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">prepare</span><span class="params">()</span> <span class="keyword">throws</span> Throwable</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">boot</span><span class="params">()</span> <span class="keyword">throws</span> Throwable</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">onComplete</span><span class="params">()</span> <span class="keyword">throws</span> Throwable</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">shutdown</span><span class="params">()</span> <span class="keyword">throws</span> Throwable</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>BootService 是一个接口，下面针对四个抽象方法逐一分析其实现。</p>
+<h2 id="TraceSegmentServiceClient"><a href="#TraceSegmentServiceClient" class="headerlink" title="TraceSegmentServiceClient"></a>TraceSegmentServiceClient</h2><p>TraceSegmentServiceClient 负责将 TraceSegment 异步发送到 Collector，其相关代码如下:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">long</span> lastLogTime;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">long</span> segmentUplinkedCounter;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">long</span> segmentAbandonedCounter;</span><br><span class="line"><span class="comment">// 内存队列，生产者消费者模型实现</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> DataCarrier&lt;TraceSegment&gt; carrier;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> TraceSegmentServiceGrpc.TraceSegmentServiceStub serviceStub;</span><br><span class="line"><span class="comment">// GRPCChannel 连接状态</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> GRPCChannelStatus status = GRPCChannelStatus.DISCONNECT;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> 将自己添加到 GRPCChannelManager 的监听器中</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">prepare</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">    ServiceManager.INSTANCE.findService(GRPCChannelManager.class).addChannelListener(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">boot</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">    lastLogTime = System.currentTimeMillis();</span><br><span class="line">    segmentUplinkedCounter = <span class="number">0</span>;</span><br><span class="line">    segmentAbandonedCounter = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 创建 DataCarrier，方法内部会创建 Channels、Buffer等</span></span><br><span class="line">    carrier = <span class="keyword">new</span> DataCarrier&lt;TraceSegment&gt;(CHANNEL_SIZE, BUFFER_SIZE);</span><br><span class="line">    <span class="comment">// 设置策略</span></span><br><span class="line">    carrier.setBufferStrategy(BufferStrategy.IF_POSSIBLE);</span><br><span class="line">    <span class="comment">// 给 DataCarrier 设置消费者，方法内部会创建ConsumerPool、ConsumerThread等</span></span><br><span class="line">    carrier.consume(<span class="keyword">this</span>, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onComplete</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">    <span class="comment">// 添加到 TracingContext 的监听器集合中</span></span><br><span class="line">    TracingContext.ListenerManager.add(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">shutdown</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">    <span class="comment">// 关闭 consumerPool</span></span><br><span class="line">    carrier.shutdownConsumers();</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">consume</span><span class="params">(List&lt;TraceSegment&gt; data)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (CONNECTED.equals(status)) &#123;</span><br><span class="line">        <span class="comment">// 创建 GRPCStreamServiceStatus 对象</span></span><br><span class="line">        <span class="keyword">final</span> GRPCStreamServiceStatus status = <span class="keyword">new</span> GRPCStreamServiceStatus(<span class="keyword">false</span>);</span><br><span class="line">        <span class="comment">// 创建 StreamObserver 对象</span></span><br><span class="line">        StreamObserver&lt;UpstreamSegment&gt; upstreamSegmentStreamObserver = serviceStub.collect(<span class="keyword">new</span> StreamObserver&lt;Downstream&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onNext</span><span class="params">(Downstream downstream)</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">            &#125;</span><br><span class="line"> </span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onError</span><span class="params">(Throwable throwable)</span> </span>&#123;</span><br><span class="line">                status.finished();</span><br><span class="line">                <span class="keyword">if</span> (logger.isErrorEnable()) &#123;</span><br><span class="line">                    logger.error(throwable, <span class="string">"Send UpstreamSegment to collector fail with a grpc internal exception."</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                ServiceManager.INSTANCE.findService(GRPCChannelManager.class).reportError(throwable);</span><br><span class="line">            &#125;</span><br><span class="line"> </span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCompleted</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                status.finished();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// 逐条非阻塞发送 TraceSegment 请求</span></span><br><span class="line">        <span class="keyword">for</span> (TraceSegment segment : data) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 将 TraceSegment 转换成 UpstreamSegment 对象，用于 gRPC 传输</span></span><br><span class="line">                UpstreamSegment upstreamSegment = segment.transform();</span><br><span class="line">                upstreamSegmentStreamObserver.onNext(upstreamSegment);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">                logger.error(t, <span class="string">"Transform and send UpstreamSegment to collector fail."</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 标记全部请求发送完成</span></span><br><span class="line">        upstreamSegmentStreamObserver.onCompleted();</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// 等待 Collector 处理完成</span></span><br><span class="line">        status.wait4Finish();</span><br><span class="line">        <span class="comment">// 记录数量到 segmentAbandonedCounter</span></span><br><span class="line">        segmentUplinkedCounter += data.size();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 记录数量到 segmentAbandonedCounter</span></span><br><span class="line">        segmentAbandonedCounter += data.size();</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    printUplinkStatus();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="DataCarrier"><a href="#DataCarrier" class="headerlink" title="DataCarrier"></a>DataCarrier</h3><p>DataCarrier 作为一个内存队列，采用生产者／消费者模型实现。相关代码如下:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> bufferSize;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> channelSize;</span><br><span class="line"><span class="comment">// 持有一个 Buffer&lt;T&gt;[]</span></span><br><span class="line"><span class="keyword">private</span> Channels&lt;T&gt; channels;</span><br><span class="line"><span class="comment">// 持有一个 ConsumerThread[]</span></span><br><span class="line"><span class="keyword">private</span> ConsumerPool&lt;T&gt; consumerPool;</span><br><span class="line"><span class="keyword">private</span> String name;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">DataCarrier</span><span class="params">(<span class="keyword">int</span> channelSize, <span class="keyword">int</span> bufferSize)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>(<span class="string">"default"</span>, channelSize, bufferSize);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">DataCarrier</span><span class="params">(String name, <span class="keyword">int</span> channelSize, <span class="keyword">int</span> bufferSize)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.name = name;</span><br><span class="line">    <span class="keyword">this</span>.bufferSize = bufferSize;</span><br><span class="line">    <span class="keyword">this</span>.channelSize = channelSize;</span><br><span class="line">    <span class="comment">// 创建一个 Channels</span></span><br><span class="line">    channels = <span class="keyword">new</span> Channels&lt;T&gt;(channelSize, bufferSize, <span class="keyword">new</span> SimpleRollingPartitioner&lt;T&gt;(), BufferStrategy.BLOCKING);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">produce</span><span class="params">(T data)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (consumerPool != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!consumerPool.isRunning()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 保存数据到 channels 的 buffer 中</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.channels.save(data);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * set consumers to this Carrier. consumer begin to run when &#123;<span class="doctag">@link</span> DataCarrier#produce&#125; begin to work.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> consumer single instance of consumer, all consumer threads will all use this instance.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> num number of consumer threads</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> DataCarrier <span class="title">consume</span><span class="params">(IConsumer&lt;T&gt; consumer, <span class="keyword">int</span> num, <span class="keyword">long</span> consumeCycle)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (consumerPool != <span class="keyword">null</span>) &#123;</span><br><span class="line">        consumerPool.close();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 创建一个 ConsumerPool，内部创建一个 ConsumerThread[num]，多个 ConsumerThread 持有同一个 consumer</span></span><br><span class="line">    <span class="comment">// 这里的 consumer 也就是 TraceSegmentServiceClient</span></span><br><span class="line">    consumerPool = <span class="keyword">new</span> ConsumerPool&lt;T&gt;(<span class="keyword">this</span>.name, <span class="keyword">this</span>.channels, consumer, num, consumeCycle);</span><br><span class="line">    <span class="comment">// 开启 consumerPool</span></span><br><span class="line">    consumerPool.begin();</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Channels"><a href="#Channels" class="headerlink" title="Channels"></a>Channels</h3><p>在 DataCarrier 的构造方法中会创建一个 Channels 对象，它包含所有属于它的 Buffer 的数据。当 Buffer 已满的时候，支持不同策略，默认为 BLOCKING。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">channels = <span class="keyword">new</span> Channels&lt;T&gt;(channelSize, bufferSize, <span class="keyword">new</span> SimpleRollingPartitioner&lt;T&gt;(), BufferStrategy.BLOCKING);</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Channels</span><span class="params">(<span class="keyword">int</span> channelSize, <span class="keyword">int</span> bufferSize, IDataPartitioner&lt;T&gt; partitioner, BufferStrategy strategy)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.dataPartitioner = partitioner;</span><br><span class="line">    <span class="keyword">this</span>.strategy = strategy;</span><br><span class="line">    <span class="comment">// 根据 channelSize 创建一个 Buffer 数组</span></span><br><span class="line">    bufferChannels = <span class="keyword">new</span> Buffer[channelSize];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; channelSize; i++) &#123;</span><br><span class="line">        bufferChannels[i] = <span class="keyword">new</span> Buffer&lt;T&gt;(bufferSize, strategy);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 保存数据</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">save</span><span class="params">(T data)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> index = dataPartitioner.partition(bufferChannels.length, data);</span><br><span class="line">    <span class="keyword">int</span> retryCountDown = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (BufferStrategy.IF_POSSIBLE.equals(strategy)) &#123;</span><br><span class="line">        <span class="keyword">int</span> maxRetryCount = dataPartitioner.maxRetryCount();</span><br><span class="line">        <span class="keyword">if</span> (maxRetryCount &gt; <span class="number">1</span>) &#123;</span><br><span class="line">            retryCountDown = maxRetryCount;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (; retryCountDown &gt; <span class="number">0</span>; retryCountDown--) &#123;</span><br><span class="line">        <span class="comment">// 调用 Buffer 的 save() 方法</span></span><br><span class="line">        <span class="keyword">if</span> (bufferChannels[index].save(data)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Buffer"><a href="#Buffer" class="headerlink" title="Buffer"></a>Buffer</h3><p>Buffer 在保存数据时，把 buffer 作为一个 “环”，使用 index 记录最后存储的位置，不断向下，循环存储到 buffer 中。<br>通过这样的方式，带来良好的存储性能，避免扩容问题。但是 ，存储会存在冲突的问题：buffer 写入位置，暂未被消费，已经存在值。此时，根据不同的 BufferStrategy 进行处理。<br>相关代码如下:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Object[] buffer;</span><br><span class="line"><span class="keyword">private</span> BufferStrategy strategy;</span><br><span class="line"><span class="keyword">private</span> AtomicRangeInteger index;</span><br><span class="line"><span class="keyword">private</span> List&lt;QueueBlockingCallback&lt;T&gt;&gt; callbacks;</span><br><span class="line"> </span><br><span class="line">Buffer(<span class="keyword">int</span> bufferSize, BufferStrategy strategy) &#123;</span><br><span class="line">    buffer = <span class="keyword">new</span> Object[bufferSize];</span><br><span class="line">    <span class="keyword">this</span>.strategy = strategy;</span><br><span class="line">    index = <span class="keyword">new</span> AtomicRangeInteger(<span class="number">0</span>, bufferSize);</span><br><span class="line">    callbacks = <span class="keyword">new</span> LinkedList&lt;QueueBlockingCallback&lt;T&gt;&gt;();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Buffer 在保存数据时，把 buffer 作为一个 "环"，使用 index 记录最后存储的位置，不断向下，循环存储到 buffer 中。</span></span><br><span class="line"><span class="comment"> * 通过这样的方式，带来良好的存储性能，避免扩容问题。</span></span><br><span class="line"><span class="comment"> * 但是 ，存储会存在冲突的问题：buffer 写入位置，暂未被消费，已经存在值。此时，根据不同的 BufferStrategy 进行处理</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">save</span><span class="params">(T data)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = index.getAndIncrement();</span><br><span class="line">    <span class="keyword">if</span> (buffer[i] != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">switch</span> (strategy) &#123;</span><br><span class="line">            <span class="keyword">case</span> BLOCKING:</span><br><span class="line">                <span class="keyword">boolean</span> isFirstTimeBlocking = <span class="keyword">true</span>;</span><br><span class="line">                <span class="keyword">while</span> (buffer[i] != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (isFirstTimeBlocking) &#123;</span><br><span class="line">                        isFirstTimeBlocking = <span class="keyword">false</span>;</span><br><span class="line">                        <span class="keyword">for</span> (QueueBlockingCallback&lt;T&gt; callback : callbacks) &#123;</span><br><span class="line">                            callback.notify(data);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        Thread.sleep(<span class="number">1L</span>);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> IF_POSSIBLE:</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">case</span> OVERRIDE:</span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    buffer[i] = data;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="ConsumerPool"><a href="#ConsumerPool" class="headerlink" title="ConsumerPool"></a>ConsumerPool</h3><p>ConsumerPool 持有一个 ConsumerThread 数组和 channels 引用。<br>ConsumerPool 含有两个同名构造函数，一个是里面的每个 ConsumerThread 持有同一个 consumer 实例，一个是里面的每个 ConsumerThread 持有各自的 consumer 实例。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">boolean</span> running;</span><br><span class="line"><span class="keyword">private</span> ConsumerThread[] consumerThreads;</span><br><span class="line"><span class="keyword">private</span> Channels&lt;T&gt; channels;</span><br><span class="line"><span class="keyword">private</span> ReentrantLock lock;</span><br><span class="line"> </span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 每个 ConsumerThread 持有各自的 consumer 实例</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ConsumerPool</span><span class="params">(String name, Channels&lt;T&gt; channels, Class&lt;? extends IConsumer&lt;T&gt;&gt; consumerClass, <span class="keyword">int</span> num,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">long</span> consumeCycle)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>(channels, num);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; num; i++) &#123;</span><br><span class="line">        consumerThreads[i] = <span class="keyword">new</span> ConsumerThread(<span class="string">"DataCarrier."</span> + name + <span class="string">".Consumser."</span> + i + <span class="string">".Thread"</span>, getNewConsumerInstance(consumerClass), consumeCycle);</span><br><span class="line">        consumerThreads[i].setDaemon(<span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 每个 ConsumerThread 持有相同的 consumer 实例</span></span><br><span class="line"><span class="comment"> */</span> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ConsumerPool</span><span class="params">(String name, Channels&lt;T&gt; channels, IConsumer&lt;T&gt; prototype, <span class="keyword">int</span> num, <span class="keyword">long</span> consumeCycle)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>(channels, num);</span><br><span class="line">    prototype.init();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; num; i++) &#123;</span><br><span class="line">        consumerThreads[i] = <span class="keyword">new</span> ConsumerThread(<span class="string">"DataCarrier."</span> + name + <span class="string">".Consumser."</span> + i + <span class="string">".Thread"</span>, prototype, consumeCycle);</span><br><span class="line">        consumerThreads[i].setDaemon(<span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="title">ConsumerPool</span><span class="params">(Channels&lt;T&gt; channels, <span class="keyword">int</span> num)</span> </span>&#123;</span><br><span class="line">    running = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">this</span>.channels = channels;</span><br><span class="line">    consumerThreads = <span class="keyword">new</span> ConsumerThread[num];</span><br><span class="line">    lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">begin</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (running) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        lock.lock();</span><br><span class="line">        <span class="comment">// 将 Buffer 分配给 线程</span></span><br><span class="line">        <span class="keyword">this</span>.allocateBuffer2Thread();</span><br><span class="line">        <span class="comment">// 启动 ConsumerThread 开始执行任务</span></span><br><span class="line">        <span class="keyword">for</span> (ConsumerThread consumerThread : consumerThreads) &#123;</span><br><span class="line">            consumerThread.start();</span><br><span class="line">        &#125;</span><br><span class="line">        running = <span class="keyword">true</span>;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="ConsumerThread"><a href="#ConsumerThread" class="headerlink" title="ConsumerThread"></a>ConsumerThread</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">boolean</span> running;</span><br><span class="line"><span class="keyword">private</span> IConsumer&lt;T&gt; consumer;</span><br><span class="line"><span class="comment">// 分配给该线程的 Buffer，持有 start 和 end 位置</span></span><br><span class="line"><span class="keyword">private</span> List&lt;DataSource&gt; dataSources;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">long</span> consumeCycle;</span><br><span class="line"> </span><br><span class="line">ConsumerThread(String threadName, IConsumer&lt;T&gt; consumer, <span class="keyword">long</span> consumeCycle) &#123;</span><br><span class="line">    <span class="keyword">super</span>(threadName);</span><br><span class="line">    <span class="keyword">this</span>.consumer = consumer;</span><br><span class="line">    running = <span class="keyword">false</span>;</span><br><span class="line">    dataSources = <span class="keyword">new</span> LinkedList&lt;DataSource&gt;();</span><br><span class="line">    <span class="keyword">this</span>.consumeCycle = consumeCycle;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    running = <span class="keyword">true</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">while</span> (running) &#123;</span><br><span class="line">        <span class="keyword">boolean</span> hasData = consume();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!hasData) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(consumeCycle);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// consumer thread is going to stop</span></span><br><span class="line">    <span class="comment">// consume the last time</span></span><br><span class="line">    consume();</span><br><span class="line"> </span><br><span class="line">    consumer.onExit();</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">consume</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> hasData = <span class="keyword">false</span>;</span><br><span class="line">    LinkedList&lt;T&gt; consumeList = <span class="keyword">new</span> LinkedList&lt;T&gt;();</span><br><span class="line">    <span class="keyword">for</span> (DataSource dataSource : dataSources) &#123;</span><br><span class="line">        LinkedList&lt;T&gt; data = dataSource.obtain();</span><br><span class="line">        <span class="keyword">if</span> (data.size() == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (T element : data) &#123;</span><br><span class="line">            consumeList.add(element);</span><br><span class="line">        &#125;</span><br><span class="line">        hasData = <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (consumeList.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// TraceSegmentServiceClient 为 IConsumer 实现之一，回头看看 TraceSegmentServiceClient 的 consume 方法</span></span><br><span class="line">            consumer.consume(consumeList);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">            consumer.onError(consumeList, t);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> hasData;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="ContextManager"><a href="#ContextManager" class="headerlink" title="ContextManager"></a>ContextManager</h2><p>ContextManager 作为 TraceSegment 的上下文管理器（TraceSegment 详细内容在此不做深究），该类的相关变量如下:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 持有一个 TraceSegment 的 上下文 Context，由于 TraceSegment 涉及到多线程的问题，所以这里采用 ThreadLocal 持有 context。</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> ThreadLocal&lt;AbstractTracerContext&gt; CONTEXT = <span class="keyword">new</span> ThreadLocal&lt;AbstractTracerContext&gt;();</span><br><span class="line"><span class="comment">// 持有一个运行时上下文，同样用 ThreadLocal 持有。</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> ThreadLocal&lt;RuntimeContext&gt; RUNTIME_CONTEXT = <span class="keyword">new</span> ThreadLocal&lt;RuntimeContext&gt;();</span><br><span class="line"><span class="comment">// ContextManagerExtendService 作为一个扩展类，帮助 ContextManager 实现创建 context 的功能。同时它也是 BootService 的一个实现类。</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> ContextManagerExtendService EXTEND_SERVICE;</span><br></pre></td></tr></table></figure></p>
+<p>它的 prepare()、onComplete()、shutdown() 方法均没有具体实现内容，来看 boot() 方法:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">boot</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 从 ServiceManager 中获取 ContextManagerExtendService，并将 this 添加到它的监听器中。</span></span><br><span class="line">    <span class="comment">// 当 TracingContext 完成时会调用 ContextManager 的 afterFinished() 方法</span></span><br><span class="line">    ContextManagerExtendService service = ServiceManager.INSTANCE.findService(ContextManagerExtendService.class);</span><br><span class="line">    service.registerListeners(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="SamplingService"><a href="#SamplingService" class="headerlink" title="SamplingService"></a>SamplingService</h2><p>SamplingService 负责管理如何对 TraceSegment 进行采样。<br>考虑到如果每条 TraceSegment 都进行追踪，会带来一定的 CPU ( 用于序列化与反序列化 ) 和网络的开销。<br>通过配置 <code>Config.Agent.SAMPLE_N_PER_3_SECS</code> 属性，设置每三秒，收集 TraceSegment 的条数。<br>其相关代码如下:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 开关</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">boolean</span> on = <span class="keyword">false</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> AtomicInteger samplingFactorHolder;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> ScheduledFuture&lt;?&gt; scheduledFuture;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">boot</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (scheduledFuture != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * If &#123;<span class="doctag">@link</span> #boot()&#125; invokes twice, mostly in test cases,</span></span><br><span class="line"><span class="comment">         * cancel the old one.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        scheduledFuture.cancel(<span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// SAMPLE_N_PER_3_SECS 可在 /config/agent.config 文件中配置</span></span><br><span class="line">    <span class="keyword">if</span> (Config.Agent.SAMPLE_N_PER_3_SECS &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        on = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">this</span>.resetSamplingFactor();</span><br><span class="line">        ScheduledExecutorService service = Executors</span><br><span class="line">            .newSingleThreadScheduledExecutor(<span class="keyword">new</span> DefaultNamedThreadFactory(<span class="string">"SamplingService"</span>));</span><br><span class="line">        <span class="comment">// 每3s调用一次 resetSamplingFactor() 重置计数器</span></span><br><span class="line">        scheduledFuture = service.scheduleAtFixedRate(<span class="keyword">new</span> RunnableWithExceptionProtection(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                resetSamplingFactor();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, <span class="keyword">new</span> RunnableWithExceptionProtection.CallbackWhenException() &#123;</span><br><span class="line">            <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handle</span><span class="params">(Throwable t)</span> </span>&#123;</span><br><span class="line">                logger.error(<span class="string">"unexpected exception."</span>, t);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;), <span class="number">0</span>, <span class="number">3</span>, TimeUnit.SECONDS);</span><br><span class="line">        logger.debug(<span class="string">"Agent sampling mechanism started. Sample &#123;&#125; traces in 10 seconds."</span>, Config.Agent.SAMPLE_N_PER_3_SECS);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">shutdown</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">    <span class="comment">// 取消 scheduledFuture </span></span><br><span class="line">    <span class="keyword">if</span> (scheduledFuture != <span class="keyword">null</span>) &#123;</span><br><span class="line">        scheduledFuture.cancel(<span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="GRPCChannelManager"><a href="#GRPCChannelManager" class="headerlink" title="GRPCChannelManager"></a>GRPCChannelManager</h2><p>GRPCChannelManager 作为 GRPCChannel 的管理器，负责创建 GRPCChannel 以及在连接状态发生改变时给各个监听器发送通知。相关代码如下:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 创建一个 ScheduledFuture</span></span><br><span class="line"><span class="comment"> * this 的 run 方法每 30s 执行一次</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> Throwable</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">boot</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (Config.Collector.BACKEND_SERVICE.trim().length() == <span class="number">0</span>) &#123;</span><br><span class="line">        logger.error(<span class="string">"Collector server addresses are not set."</span>);</span><br><span class="line">        logger.error(<span class="string">"Agent will not uplink any data."</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 根据 BACKEND_SERVICE 获取 Collector 的地址</span></span><br><span class="line">    grpcServers = Arrays.asList(Config.Collector.BACKEND_SERVICE.split(<span class="string">","</span>));</span><br><span class="line">    connectCheckFuture = Executors</span><br><span class="line">        .newSingleThreadScheduledExecutor(<span class="keyword">new</span> DefaultNamedThreadFactory(<span class="string">"GRPCChannelManager"</span>))</span><br><span class="line">        .scheduleAtFixedRate(<span class="keyword">new</span> RunnableWithExceptionProtection(<span class="keyword">this</span>, <span class="keyword">new</span> RunnableWithExceptionProtection.CallbackWhenException() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handle</span><span class="params">(Throwable t)</span> </span>&#123;</span><br><span class="line">                logger.error(<span class="string">"unexpected exception."</span>, t);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;), <span class="number">0</span>, Config.Collector.GRPC_CHANNEL_CHECK_INTERVAL, TimeUnit.SECONDS);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 关闭 managedChannel</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">shutdown</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">    connectCheckFuture.cancel(<span class="keyword">true</span>);</span><br><span class="line">    <span class="keyword">if</span> (managedChannel != <span class="keyword">null</span>) &#123;</span><br><span class="line">        managedChannel.shutdownNow();</span><br><span class="line">    &#125;</span><br><span class="line">    logger.debug(<span class="string">"Selected collector grpc service shutdown."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    logger.debug(<span class="string">"Selected collector grpc service running, reconnect:&#123;&#125;."</span>, reconnect);</span><br><span class="line">    <span class="keyword">if</span> (reconnect) &#123;</span><br><span class="line">        <span class="keyword">if</span> (grpcServers.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            String server = <span class="string">""</span>;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 选取一个服务器</span></span><br><span class="line">                <span class="keyword">int</span> index = Math.abs(random.nextInt()) % grpcServers.size();</span><br><span class="line">                server = grpcServers.get(index);</span><br><span class="line">                String[] ipAndPort = server.split(<span class="string">":"</span>);</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 根据 ip 和 port 创建一个 GRPCChannel</span></span><br><span class="line">                managedChannel = GRPCChannel.newBuilder(ipAndPort[<span class="number">0</span>], Integer.parseInt(ipAndPort[<span class="number">1</span>]))</span><br><span class="line">                    .addManagedChannelBuilder(<span class="keyword">new</span> StandardChannelBuilder())</span><br><span class="line">                    .addManagedChannelBuilder(<span class="keyword">new</span> TLSChannelBuilder())</span><br><span class="line">                    .addChannelDecorator(<span class="keyword">new</span> AuthenticationDecorator())</span><br><span class="line">                    .build();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (!managedChannel.isShutdown() &amp;&amp; !managedChannel.isTerminated()) &#123;</span><br><span class="line">                    reconnect = <span class="keyword">false</span>;</span><br><span class="line">                    <span class="comment">// 通知所有监听器listener： GRPCChannel 连接了</span></span><br><span class="line">                    notify(GRPCChannelStatus.CONNECTED);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// 通知所有监听器listener： GRPCChannel 失去连接了</span></span><br><span class="line">                    notify(GRPCChannelStatus.DISCONNECT);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">                logger.error(t, <span class="string">"Create channel to &#123;&#125; fail."</span>, server);</span><br><span class="line">                notify(GRPCChannelStatus.DISCONNECT);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        logger.debug(<span class="string">"Selected collector grpc service is not available. Wait &#123;&#125; seconds to retry"</span>, Config.Collector.GRPC_CHANNEL_CHECK_INTERVAL);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 连接状态改变时给监听器发送连接状态</span></span><br><span class="line"><span class="comment"> *／</span></span><br><span class="line"><span class="comment">private void notify(GRPCChannelStatus status) &#123;</span></span><br><span class="line"><span class="comment">    // 已知的 listener 有 AppAndServiceRegisterClient、TraceSegmentServiceClient、JVMService.Send</span></span><br><span class="line"><span class="comment">    for (GRPCChannelListener listener : listeners) &#123;</span></span><br><span class="line"><span class="comment">        try &#123;</span></span><br><span class="line"><span class="comment">            listener.statusChanged(status);</span></span><br><span class="line"><span class="comment">        &#125; catch (Throwable t) &#123;</span></span><br><span class="line"><span class="comment">            logger.error(t, "Fail to notify &#123;&#125; about channel connected.", listener.getClass().getName());</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">    &#125;</span></span><br><span class="line"><span class="comment">&#125;</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="JVMService"><a href="#JVMService" class="headerlink" title="JVMService"></a>JVMService</h2><p>JVMService 收集 JVM cpu, memory, memorypool 和 gc 信息发送给 Collector。</p>
+<h2 id="AppAndServiceRegisterClient"><a href="#AppAndServiceRegisterClient" class="headerlink" title="AppAndServiceRegisterClient"></a>AppAndServiceRegisterClient</h2><p>AppAndServiceRegisterClient 负责服务和服务实例的注册及心跳检测。主要做了以下几件事:</p>
+<ul>
+<li>准备阶段 prepare() 将自己注册为 GRPCChannelManager 的监听器。</li>
+<li>接收 GRPCChannelManager 发送的 GRPCChannel 连接状态。 </li>
+<li>创建一个 ScheduledFuture，每 3s 执行一次任务。</li>
+<li>执行任务时根据 GRPCChannel 连接状态以及 APPLICATION_ID 进行服务注册/服务实例注册/服务实例心跳检测。<br>其相关代码如下:<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 服务和服务实例注册客户端</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> wusheng</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@DefaultImplementor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppAndServiceRegisterClient</span> <span class="keyword">implements</span> <span class="title">BootService</span>, <span class="title">Runnable</span>, <span class="title">GRPCChannelListener</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ILog logger = LogManager.getLogger(AppAndServiceRegisterClient.class);</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String PROCESS_UUID = UUID.randomUUID().toString().replaceAll(<span class="string">"-"</span>, <span class="string">""</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> GRPCChannelStatus status = GRPCChannelStatus.DISCONNECT;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> ApplicationRegisterServiceGrpc.ApplicationRegisterServiceBlockingStub applicationRegisterServiceBlockingStub;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> InstanceDiscoveryServiceGrpc.InstanceDiscoveryServiceBlockingStub instanceDiscoveryServiceBlockingStub;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> ServiceNameDiscoveryServiceGrpc.ServiceNameDiscoveryServiceBlockingStub serviceNameDiscoveryServiceBlockingStub;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> NetworkAddressRegisterServiceGrpc.NetworkAddressRegisterServiceBlockingStub networkAddressRegisterServiceBlockingStub;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> ScheduledFuture&lt;?&gt; applicationRegisterFuture;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 从 GRPCChannelManager notify() 获取到连接状态</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> status</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">statusChanged</span><span class="params">(GRPCChannelStatus status)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (GRPCChannelStatus.CONNECTED.equals(status)) &#123;</span><br><span class="line">            <span class="comment">// 获取带 AuthenticationDecorator 装饰的 channel</span></span><br><span class="line">            Channel channel = ServiceManager.INSTANCE.findService(GRPCChannelManager.class).getChannel();</span><br><span class="line">            applicationRegisterServiceBlockingStub = ApplicationRegisterServiceGrpc.newBlockingStub(channel);</span><br><span class="line">            instanceDiscoveryServiceBlockingStub = InstanceDiscoveryServiceGrpc.newBlockingStub(channel);</span><br><span class="line">            serviceNameDiscoveryServiceBlockingStub = ServiceNameDiscoveryServiceGrpc.newBlockingStub(channel);</span><br><span class="line">            networkAddressRegisterServiceBlockingStub = NetworkAddressRegisterServiceGrpc.newBlockingStub(channel);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            applicationRegisterServiceBlockingStub = <span class="keyword">null</span>;</span><br><span class="line">            instanceDiscoveryServiceBlockingStub = <span class="keyword">null</span>;</span><br><span class="line">            serviceNameDiscoveryServiceBlockingStub = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 设置状态</span></span><br><span class="line">        <span class="keyword">this</span>.status = status;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">      将自己添加到 GRPCChannelManager 的监听器中</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">prepare</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        ServiceManager.INSTANCE.findService(GRPCChannelManager.class).addChannelListener(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建一个 ScheduledFuture</span></span><br><span class="line"><span class="comment">     * this 的 run 方法每 3s 执行一次</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Throwable</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">boot</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        applicationRegisterFuture = Executors</span><br><span class="line">            .newSingleThreadScheduledExecutor(<span class="keyword">new</span> DefaultNamedThreadFactory(<span class="string">"AppAndServiceRegisterClient"</span>))</span><br><span class="line">            .scheduleAtFixedRate(<span class="keyword">new</span> RunnableWithExceptionProtection(<span class="keyword">this</span>, <span class="keyword">new</span> RunnableWithExceptionProtection.CallbackWhenException() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handle</span><span class="params">(Throwable t)</span> </span>&#123;</span><br><span class="line">                    logger.error(<span class="string">"unexpected exception."</span>, t);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;), <span class="number">0</span>, Config.Collector.APP_AND_SERVICE_REGISTER_CHECK_INTERVAL, TimeUnit.SECONDS);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onComplete</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">shutdown</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        applicationRegisterFuture.cancel(<span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        logger.debug(<span class="string">"AppAndServiceRegisterClient running, status:&#123;&#125;."</span>, status);</span><br><span class="line">        <span class="keyword">boolean</span> shouldTry = <span class="keyword">true</span>;</span><br><span class="line">        <span class="comment">// 在上面 statusChanged 方法改变状态为已连接后执行</span></span><br><span class="line">        <span class="keyword">while</span> (GRPCChannelStatus.CONNECTED.equals(status) &amp;&amp; shouldTry) &#123;</span><br><span class="line">            shouldTry = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 服务注册</span></span><br><span class="line">                <span class="comment">// APPLICATION_ID 默认值就是 DictionaryUtil.nullValue()</span></span><br><span class="line">                <span class="keyword">if</span> (RemoteDownstreamConfig.Agent.APPLICATION_ID == DictionaryUtil.nullValue()) &#123;</span><br><span class="line">                    <span class="comment">// 正常来说，states 为 CONNECTED 的话，applicationRegisterServiceBlockingStub 不会为 null</span></span><br><span class="line">                    <span class="keyword">if</span> (applicationRegisterServiceBlockingStub != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        <span class="comment">// APPLICATION_CODE 在 skywalking-agent 的 agent.conf 文件中配置</span></span><br><span class="line">                        Application request = Application.newBuilder().setApplicationCode(Config.Agent.APPLICATION_CODE).build();</span><br><span class="line">                        logger.debug(<span class="string">"AppAndServiceRegisterClient request:&#123;&#125;."</span>, request);</span><br><span class="line">                        ApplicationMapping applicationMapping = applicationRegisterServiceBlockingStub.applicationCodeRegister(</span><br><span class="line">                            Application.newBuilder().setApplicationCode(Config.Agent.APPLICATION_CODE).build());</span><br><span class="line">                        <span class="comment">// 从 response 中获取 APPLICATION_ID 设置到 RemoteDownstreamConfig.Agent</span></span><br><span class="line">                        <span class="keyword">if</span> (applicationMapping != <span class="keyword">null</span>) &#123;</span><br><span class="line">                            RemoteDownstreamConfig.Agent.APPLICATION_ID = applicationMapping.getApplication().getValue();</span><br><span class="line">                            shouldTry = <span class="keyword">true</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// 服务实例注册</span></span><br><span class="line">                    <span class="keyword">if</span> (instanceDiscoveryServiceBlockingStub != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        <span class="keyword">if</span> (RemoteDownstreamConfig.Agent.APPLICATION_INSTANCE_ID == DictionaryUtil.nullValue()) &#123;</span><br><span class="line"></span><br><span class="line">                            ApplicationInstanceMapping instanceMapping = instanceDiscoveryServiceBlockingStub.registerInstance(ApplicationInstance.newBuilder()</span><br><span class="line">                                .setApplicationId(RemoteDownstreamConfig.Agent.APPLICATION_ID)</span><br><span class="line">                                .setAgentUUID(PROCESS_UUID)</span><br><span class="line">                                .setRegisterTime(System.currentTimeMillis())</span><br><span class="line">                                .setOsinfo(OSUtil.buildOSInfo())</span><br><span class="line">                                .build());</span><br><span class="line">                            <span class="keyword">if</span> (instanceMapping.getApplicationInstanceId() != DictionaryUtil.nullValue()) &#123;</span><br><span class="line">                                RemoteDownstreamConfig.Agent.APPLICATION_INSTANCE_ID</span><br><span class="line">                                    = instanceMapping.getApplicationInstanceId();</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="comment">// 服务实例心跳检测</span></span><br><span class="line">                        <span class="keyword">else</span> &#123;</span><br><span class="line">                            instanceDiscoveryServiceBlockingStub.heartbeat(ApplicationInstanceHeartbeat.newBuilder()</span><br><span class="line">                                .setApplicationInstanceId(RemoteDownstreamConfig.Agent.APPLICATION_INSTANCE_ID)</span><br><span class="line">                                .setHeartbeatTime(System.currentTimeMillis())</span><br><span class="line">                                .build());</span><br><span class="line"></span><br><span class="line">                            NetworkAddressDictionary.INSTANCE.syncRemoteDictionary(networkAddressRegisterServiceBlockingStub);</span><br><span class="line">                            OperationNameDictionary.INSTANCE.syncRemoteDictionary(serviceNameDiscoveryServiceBlockingStub);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">                logger.error(t, <span class="string">"AppAndServiceRegisterClient execute fail."</span>);</span><br><span class="line">                ServiceManager.INSTANCE.findService(GRPCChannelManager.class).reportError(t);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="ContextManagerExtendService"><a href="#ContextManagerExtendService" class="headerlink" title="ContextManagerExtendService"></a>ContextManagerExtendService</h2><p>ContextManagerExtendService 作为 ContextManager 的扩展帮助类，代码比较简单，主要有两个功能:</p>
+<ol>
+<li>将 ContextManager 添加到 TracingContext、IgnoredTracerContext 的监听器集合中，等待 context 完成时通知。</li>
+<li>帮助 ContextManager 创建 AbstractTracerContext。</li>
+</ol>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>SkyWalking Agent 具有丰富的插件支持，支持列表可见 github 官方项目</li>
+<li>SkyWalking Agent 通过 ServiceManager 管理多个 BootService</li>
+<li>TraceSegmentServiceClient 负责发送 TraceSegment 到 Collector</li>
+<li>ContextManager 负责管理 TraceSegment 的上下文</li>
+<li>SamplingService 负责管理如何进行 TraceSegment 的采样</li>
+<li>GRPCChannelManager 负责管理 GRPCChannel 的创建及将状态发送至各个监听器</li>
+<li>JVMService 负责将 JVM 以及 GC 信息发送到 Collector</li>
+<li>AppAndServiceRegisterClient 作为一个客户端，负责进行服务注册、服务实例注册、心跳检测等调用</li>
+<li>ContextManagerExtendService 作为 ContextManager 的扩展帮助类</li>
+</ul>
+<p>参考博文：<a href="http://www.iocoder.cn/categories/SkyWalking/" target="_blank" rel="noopener">芋道源码</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SkyWalking/" rel="tag"># SkyWalking</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/21/SkyWalking使用指南/" rel="next" title="Apache SkyWalking 使用指南">
+                <i class="fa fa-chevron-left"></i> Apache SkyWalking 使用指南
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/27/SkyWalking-Collector源码浅析/" rel="prev" title="SkyWalking Collector源码浅析">
+                SkyWalking Collector源码浅析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/AcFun.png" alt="Lollipop">
+          <p class="site-author-name" itemprop="name">Lollipop</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Jimmy2Angel" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:a1334416010@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SkyWalking-Agent-入口"><span class="nav-number">1.</span> <span class="nav-text">SkyWalking Agent 入口</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化配置"><span class="nav-number">1.1.</span> <span class="nav-text">初始化配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化插件"><span class="nav-number">1.2.</span> <span class="nav-text">初始化插件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PluginBootstrap"><span class="nav-number">1.2.1.</span> <span class="nav-text">PluginBootstrap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PluginFinder"><span class="nav-number">1.2.2.</span> <span class="nav-text">PluginFinder</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化服务管理"><span class="nav-number">1.3.</span> <span class="nav-text">初始化服务管理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ServiceManager"><span class="nav-number">2.</span> <span class="nav-text">ServiceManager</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BootService"><span class="nav-number">3.</span> <span class="nav-text">BootService</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TraceSegmentServiceClient"><span class="nav-number">3.1.</span> <span class="nav-text">TraceSegmentServiceClient</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DataCarrier"><span class="nav-number">3.1.1.</span> <span class="nav-text">DataCarrier</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Channels"><span class="nav-number">3.1.2.</span> <span class="nav-text">Channels</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Buffer"><span class="nav-number">3.1.3.</span> <span class="nav-text">Buffer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ConsumerPool"><span class="nav-number">3.1.4.</span> <span class="nav-text">ConsumerPool</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ConsumerThread"><span class="nav-number">3.1.5.</span> <span class="nav-text">ConsumerThread</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ContextManager"><span class="nav-number">3.2.</span> <span class="nav-text">ContextManager</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SamplingService"><span class="nav-number">3.3.</span> <span class="nav-text">SamplingService</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GRPCChannelManager"><span class="nav-number">3.4.</span> <span class="nav-text">GRPCChannelManager</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JVMService"><span class="nav-number">3.5.</span> <span class="nav-text">JVMService</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AppAndServiceRegisterClient"><span class="nav-number">3.6.</span> <span class="nav-text">AppAndServiceRegisterClient</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ContextManagerExtendService"><span class="nav-number">3.7.</span> <span class="nav-text">ContextManagerExtendService</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lollipop</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

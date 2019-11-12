@@ -1,0 +1,869 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Spring,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/apple-touch-icon.png?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="Spring 容器启动对于一个web应用，部署在web容器中，web容器为其提供一个全局的上下文环境即ServletContext，其为SpringIOC容器提供宿主环境。启动web项目后，会去加载web.xml中的内容,其中包括以下内容">
+<meta name="keywords" content="Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring容器那点事">
+<meta property="og:url" content="http://yoursite.com/2017/05/31/SpringIOC/index.html">
+<meta property="og:site_name" content="小白爬坑之旅">
+<meta property="og:description" content="Spring 容器启动对于一个web应用，部署在web容器中，web容器为其提供一个全局的上下文环境即ServletContext，其为SpringIOC容器提供宿主环境。启动web项目后，会去加载web.xml中的内容,其中包括以下内容">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/ContextLoaderListener.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/ContextLoader.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/ContextLoader-determineContextClass.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/ContextLoader-static.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/ContextLoader-initWebApplicationContext.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/AbstractApplicationContext-refresh.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/AbstractApplicationContext-obtainFreshBeanFactory.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/AbstractRefreshableApplicationContext-refreshBeanFactory.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/XmlWebApplicationContext.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/AbstractBeanDefinitionReader.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/DefaultBeanDefinitionDocumentReader-doRegisterBeanDefinitions.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/DefaultBeanDefinitionDocumentReader-parseBeanDefinitions.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/ComponentScanBeanDefinitionParser-parse.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/ClassPathBeanDefinitionScanner-doScan.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/findCandidateComponents.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/getResources.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/PathMatchingResourcePatternResolver-getResources.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/findPathMatchingResources.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/findAllClassPathResources.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/doFindAllClassPathResources.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/AbstractApplicationContext-finishBeanFactoryInitialization.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/DefaultListableBeanFactory-preInstantiateSingletons.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/AbstractBeanFactory-doGetBean1.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/DefaultSingletonBeanRegistry-getSingleton.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/AbstractBeanFactory-doGetBean2.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/AbstractAutowireCapableBeanFactory.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/AutowiredAnnotationBeanPostProcessor.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/InjectionMetadata.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringIOC/InjectionElement.png">
+<meta property="og:updated_time" content="2018-11-24T05:21:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring容器那点事">
+<meta name="twitter:description" content="Spring 容器启动对于一个web应用，部署在web容器中，web容器为其提供一个全局的上下文环境即ServletContext，其为SpringIOC容器提供宿主环境。启动web项目后，会去加载web.xml中的内容,其中包括以下内容">
+<meta name="twitter:image" content="http://yoursite.com/img/SpringIOC/ContextLoaderListener.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/05/31/SpringIOC/">
+
+
+
+
+
+  <title>Spring容器那点事 | 小白爬坑之旅</title>
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小白爬坑之旅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/31/SpringIOC/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lollipop">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/AcFun.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小白爬坑之旅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Spring容器那点事
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-31T19:46:06+08:00">
+                2017-05-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Spring-容器启动"><a href="#Spring-容器启动" class="headerlink" title="Spring 容器启动"></a>Spring 容器启动</h2><p>对于一个web应用，部署在web容器中，web容器为其提供一个全局的上下文环境即ServletContext，其为SpringIOC容器提供宿主环境。<br>启动web项目后，会去加载web.xml中的内容,其中包括以下内容<a id="more"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;context-param&gt;</span><br><span class="line">    &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;</span><br><span class="line">    &lt;param-value&gt;</span><br><span class="line">      classpath:spring-application.xml,</span><br><span class="line">    &lt;/param-value&gt;</span><br><span class="line">  &lt;/context-param&gt;</span><br><span class="line"></span><br><span class="line">  &lt;listener&gt;</span><br><span class="line">    &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;</span><br><span class="line">  &lt;/listener&gt;</span><br></pre></td></tr></table></figure>
+<p>由于 ContextLoaderListener 实现了 ServletContextListener 接口，故在web容器启动的时候，ContextLoaderListener 会监听到这个事件，contextInitialized(event) 方法被调用。 </p>
+<div align="center"><br><img src="/img/SpringIOC/ContextLoaderListener.png" alt="image"><br></div>
+
+<p>跟踪该方法会发现它初始化一个上下文 WebApplicationContext，默认实现类为 XmlWebApplicationContext，也就是 SpringIOC 容器。在 ContextLoader 创建如下：</p>
+<div align="center"><br><img src="/img/SpringIOC/ContextLoader.png" alt="image"><br></div>
+
+<p>跟踪 determineContextClass(servletContext) 方法，由于我们未配置 contextClass，<br>所以走else走</p>
+<div align="center"><br><img src="/img/SpringIOC/ContextLoader-determineContextClass.png" alt="image"><br></div>
+
+<p>一开始我就知道创建了一个 WebApplicationContext 没仔细看创建的是什么，后来打断点发现 contextClassName 为 XmlWebApplicationContext，383行的 defaultStrategies 原来在静态块中，真是大意了。（你去看下 org.springframework.web.context 包下的 ContextLoader.properties 就知道了）</p>
+<div align="center"><br><img src="/img/SpringIOC/ContextLoader-static.png" alt="image"><br></div>
+
+<p>然后返回看 initWebApplicationContext(servletContext)，给 IOC 容器设置父容器，并把它作为属性设置进web容器。</p>
+<div align="center"><br><img src="/img/SpringIOC/ContextLoader-initWebApplicationContext.png" alt="image"><br></div>
+
+<p>我们主要看下306行的 configureAndRefreshWebApplicationContext(cwac，servletContext) 方法。源码不贴了，主要就是给设置一些web容器中的配置信息(包括将 ServletContext 设置成 XmlWebApplicationContext 的属性，这样 Spring 就能在上下文里轻松拿到 ServletContext 了)</p>
+<h2 id="Spring-加载-class-文件"><a href="#Spring-加载-class-文件" class="headerlink" title="Spring 加载 class 文件"></a>Spring 加载 class 文件</h2><p>看最后一行的 refresh()方法即可，在这个方法里，会完成资源文件的加载、配置文件解析、Bean定义的注册、组件的初始化等核心工作。该方法来自于 XmlWebApplicationContext 的父父父类 AbstractApplicationContext(调皮一下，我并不是个结巴==)，其实不管是 web 容器装载的 XmlWebApplicationContext 还是直接 ClassPathXmlApplicationContext 都会调用这个方法。</p>
+<div align="center"><br><img src="/img/SpringIOC/AbstractApplicationContext-refresh.png" alt="image"><br></div>
+
+<p>讲道理我现在一眼看到 synchronized，我都不把它翻译成锁，我都翻译成安全哈哈哈。至于这为什么不是锁住整个 refresh() 方法，由于不属于今天所讲的范围就不说了，感兴趣的自己去查一下咯。<br>我们来看下初始化 BeanFactory，obtainFreshBeanFactory 是整个 refresh() 方法的核心，其中完成了配置文件的加载、解析、注册。</p>
+<div align="center"><br><img src="/img/SpringIOC/AbstractApplicationContext-obtainFreshBeanFactory.png" alt="image"><br></div>
+
+<p>后面你看到的都是 getBeanFactory 的代码，也就是已经初始化好了，这个 refreshBeanFactory 方法是 AbstractRefreshableApplicationContext 中的方法，它是 AbstractApplicationContext 的子类，同样不论是 XmlWebApplicationContext 还是 ClassPathXmlApplicationContext 都继承了它，因此都能调用到这个一样的初始化方法。</p>
+<div align="center"><br><img src="/img/SpringIOC/AbstractRefreshableApplicationContext-refreshBeanFactory.png" alt="image"><br></div>
+
+<p>createBeanFactory 就是实例化一个 beanFactory 没别的，我们要看的是 bean 在哪里加载的，现在貌似还没看到重点，继续跟踪 loadBeanDefinitions(DefaultListableBeanFactory) 方法，此处web项目中将会由类： XmlWebApplicationContext 来实现</p>
+<div align="center"><br><img src="/img/SpringIOC/XmlWebApplicationContext.png" alt="image"><br></div>
+
+<p>这里有一个 XmlBeanDefineitionReader，是读取 XML 中 spring 的相关信息（也就是解析 spring-application.xml 的），这里通过 getConfigLocations() 获取到的就是这个或多个文件的路径，会循环，通过 XmlBeanDefineitionReader 来解析，跟踪到 loadBeanDefinitions 方法里面，会发现方法实现体在 XmlBeanDefineitionReader 的父类 AbstractBeanDefinitionReader 中，代码如下：</p>
+<div align="center"><br><img src="/img/SpringIOC/AbstractBeanDefinitionReader.png" alt="image"><br></div>
+
+<h3 id="解析spring-application-xml"><a href="#解析spring-application-xml" class="headerlink" title="解析spring-application.xml"></a>解析spring-application.xml</h3><p>我们目前只解析到我们的 spring-application.xml 在哪里，但是还没解析到spring-application.xml 的内容是什么，可能有多个 spring 的配置文件，这里会出现多个 Resource，所以是一个数组。<br>XmlBeanDefinitionReader.loadBeanDefinitions(Resource) 和上面这个类是父子关系，接下来会做：doLoadBeanDefinitions、registerBeanDefinitions 的操作，在注册 beanDefinitions 的时候，其实就是要真正开始解析XML了<br>它调用了 DefaultBeanDefinitionDocumentReader 类的 registerBeanDefinitions 方法，然后调用了 doRegisterBeanDefinitions 方法，如下图所示：</p>
+<div align="center"><br><img src="/img/SpringIOC/DefaultBeanDefinitionDocumentReader-doRegisterBeanDefinitions.png" alt="image"><br></div>
+
+<p>这里创建了一个 BeanDefinitionParserDelegate 实例，解析 XML 的过程就是委托它完成的，我们先不管它是怎样解析XML的，我们看下它怎么加载类的，所以主要看 parseBeanDefinitions 这个方法，里面会调用到 BeanDefinitionParserDelegate 类的 parseCustomElement 方法，用来解析bean的信息：</p>
+<div align="center"><br><img src="/img/SpringIOC/DefaultBeanDefinitionDocumentReader-parseBeanDefinitions.png" alt="image"><br></div>
+
+<p>这里解析了 XML 的信息，跟踪进去，会发现用了 NamespaceHandlerSupport 的 parse 方法，它会根据节点的类型，找到一种合适的解析 BeanDefinitionParser（接口），他们预先被 spring 注册好了，放在一个 HashMap 中，例如我们在 spring 中通常会配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;context:component-scan base-package=&quot;com.lb.supervision.service&quot; use-default-filters=&quot;false&quot;&gt;</span><br><span class="line">        &lt;context:include-filter type=&quot;annotation&quot; expression=&quot;org.springframework.stereotype.Service&quot; /&gt;</span><br><span class="line">    &lt;/context:component-scan&gt;</span><br></pre></td></tr></table></figure></p>
+<p>此时根据名称“component-scan”就会找到对应的解析器来解析，而与之对应的就是 ComponentScanBeanDefinitionParser 的 parse 方法，这地方已经很明显有扫描 bean 的概念在里面了，这里的 parse 获取到后，中间有一个非常非常关键的步骤那就是定义了 ClassPathBeanDefinitionScanner 来扫描类的信息，它扫描的是什么？是加载的类还是class文件呢？答案是后者，为什么？，因为有些类在初始化化时根本还没被加载， ClassLoader 根本还没加载，只是 ClassLoader 可以找到这些 class 的路径而已：</p>
+<div align="center"><br><img src="/img/SpringIOC/ComponentScanBeanDefinitionParser-parse.png" alt="image"><br></div>
+
+<p>咦，看到这个doScan有种似曾相识的感觉呢，啊，之前说 mybatis 的 mapper 接口代理的时候看到过。先不说这个了，跟进去看看。</p>
+<div align="center"><br><img src="/img/SpringIOC/ClassPathBeanDefinitionScanner-doScan.png" alt="image"><br></div>
+
+<p>这么多代码看着很难受，要说把每行代码都搞懂估计现在还有点困难，直接看重点  findCandidateComponents，也就是通过每个 basePackage 去获取匹配的 class 文件路径。</p>
+<div align="center"><br><img src="/img/SpringIOC/findCandidateComponents.png" alt="image"><br></div>
+
+<div align="center"><br><img src="/img/SpringIOC/getResources.png" alt="image"><br></div>
+
+<p>此处的 packageSearchPath = classpath*:com/lb/supervision/service/**/*.class，如果我们配置的是 * ，那么将会被组装为 classpath*:*/**/*.class，这个也能获取到？ Spring 还有这种操作的？我们点进 getResources(packageSearchPath)方法看下：</p>
+<div align="center"><br><img src="/img/SpringIOC/PathMatchingResourcePatternResolver-getResources.png" alt="image"><br></div>
+
+<p>这里会先判断表达式是否以 classpath*: 开头。前面我们看到 Spring 已经给我们添加了这个头，这里当然符合条件了。接着会进入 findPathMatchingResources 方法。在这里又把 **/*.class 去掉了，然后在调用 getResources 方法，然后再进入 findAllClassPathResources 方法。这里的参数只剩下包名了例如 com/lb/supervision/service/ 。，先看下 findPathMatchingResources 方法：</p>
+<div align="center"><br><img src="/img/SpringIOC/findPathMatchingResources.png" alt="image"><br></div>
+
+<p>这里有一个 rootDirPath，这个地方有个容易出错的，是如果你配置的是 com.lb.supervision.service ，那么 rootDirPath 部分应该是： classpath*:com/lb/supervision/service ， 而如果配置是 * 那么就是 classpath*: 只有这个结果，而不是 classpath*:* （这里我就不说截取字符串的源码了），回到上一段代码，这里再次调用了 getResources(String) 方法，又回到前面一个方法，这一次，依然是以 classpath*: 开头，所以第一层 if 语句会进去，而第二层不会。所以我们再看一下 findAllClassPathResources(location)方法里的 doFindAllClassPathResources(path)：</p>
+<div align="center"><br><img src="/img/SpringIOC/findAllClassPathResources.png" alt="image"><br></div>
+
+<div align="center"><br><img src="/img/SpringIOC/doFindAllClassPathResources.png" alt="image"><br></div>
+
+<p>真相大白了， Spring 也是用的 ClassLoader 加载的 class 文件。一路追踪，原始的 ClassLoader 是 Thread.currentThread().getContextClassLoader()。<br>到此为止，就拿到class文件了。<br>然后我们回到 ClassPathBeanDefinitionScanner 的 doScan() 方法，跟踪 registerBeanDefinition() 方法直到 DefaultListableBeanFactory 类中的registerBeanDefinition() 方法。 Spring 会将 class 信息封装成的 BeanDefinition 放进 DefaultListableBeanFactory 的 beanDefinitionMap 中。源码就不贴了，感兴趣的旁友自己看下。</p>
+<h2 id="Spring-实例化-非懒加载单例bean"><a href="#Spring-实例化-非懒加载单例bean" class="headerlink" title="Spring 实例化 非懒加载单例bean"></a>Spring 实例化 非懒加载单例bean</h2><p>我们回到 refresh() 方法中看 finishBeanFactoryInitialization(beanFactory) 方法，此方法主要的任务就是实例化非懒加载的单例 bean。来看下这个方法：</p>
+<div align="center"><br><img src="/img/SpringIOC/AbstractApplicationContext-finishBeanFactoryInitialization.png" alt="image"><br></div>
+
+<p>由于代码长没有截全，该方法首先将加载进来的 beanDefinitionNames 循环分析，如果是我们自己配置的 bean 就会走 else 中的 getBean(beanName)。</p>
+<div align="center"><br><img src="/img/SpringIOC/DefaultListableBeanFactory-preInstantiateSingletons.png" alt="image"><br></div>
+
+<p>getBean(beanName) 中调用 doGetBean() 方法,二话不说点进去看看，卧槽这么长！唉，没办法一点点看吧。</p>
+<div align="center"><br><img src="/img/SpringIOC/AbstractBeanFactory-doGetBean1.png" alt="image"><br></div>
+
+<p>我们先看下这里的 getSingleton() 方法：</p>
+<div align="center"><br><img src="/img/SpringIOC/DefaultSingletonBeanRegistry-getSingleton.png" alt="image"><br></div>
+
+<p>这里能看到， Spring 会把实例化好的 bean 存入 singletonObjects，这是一个 ConcurrentHashMap 。当然这里我们 bean 并未实例化过，所以这里应该也不能 get 出什么东西来，也就是返回 null 了。 doGetBean() 中的第一个 if 子句也就不会执行了。那么接着看 else 子句的内容。</p>
+<div align="center"><br><img src="/img/SpringIOC/AbstractBeanFactory-doGetBean2.png" alt="image"><br></div>
+
+<p>在这里拿到 RootBeanDefinition 并 check，并获得 bean 的依赖，并循环迭代实例化 bean。例如class A 依赖于 class B，就会先实例化B。下面的 if … else …就是真正实例化 bean 的地方。其实真正实例化 bean 的方法是 createBean(beanName, mbd, args)，只是区分了 isSingleton 或 isPrototype ，两者的区别在于单例的(Singleton)被缓存起来，而 Prototype 是不用缓存的。首先看一下 createBean()。 createBean 方法中除了做了一些实例化 bean 前的检查准备工作外，最核心的方法就是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">beanInstance = this.doCreateBean(beanName, mbd, args);</span><br></pre></td></tr></table></figure>
+<p>这里面代码那就多了，就不贴出所有代码了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">protected Object doCreateBean(final String beanName, final RootBeanDefinition mbd, Object[] args) &#123;</span><br><span class="line">        BeanWrapper instanceWrapper = null;</span><br><span class="line">        if(mbd.isSingleton()) &#123;</span><br><span class="line">            instanceWrapper = (BeanWrapper)this.factoryBeanInstanceCache.remove(beanName);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if(instanceWrapper == null) &#123;</span><br><span class="line">            instanceWrapper = this.createBeanInstance(beanName, mbd, args);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        final Object bean = instanceWrapper != null?instanceWrapper.getWrappedInstance():null;</span><br><span class="line">        Class beanType = instanceWrapper != null?instanceWrapper.getWrappedClass():null;</span><br></pre></td></tr></table></figure>
+<p>首先就是创建一个bean的实例且封装到BeanWrapper中，在这里bean已经实例化了。具体的实现方法是在org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(RootBeanDefinition beanDefinition, String beanName, BeanFactory owner) 中。里面不难看出分两种情况，如果没有无参构造器是就生成CGLIB子类，否则就直接反射成实例。</p>
+<p>既然已经有了实例对象了，那么， Spring 是如何将 bean 的属性注入到 bean 的呢？返回到上面的 doCreateBean 方法中。往下看找到 populateBean(beanName, mbd, instanceWrapper) ，内幕就在这里：</p>
+<div align="center"><br><img src="/img/SpringIOC/AbstractAutowireCapableBeanFactory.png" alt="image"><br></div>
+
+<p>这里是调用 InstantiationAwareBeanPostProcessor 的具体子类的 ibp.postProcessPropertyValues 方法注入属性。当我们使用 @Resource 注解的时候，具体的子类是 CommonAnnotationBeanPostProcessor；如果使用的是 @Autowired 注解，则具体的子类是 AutowiredAnnotationBeanPostProcessor。此方法内是委托 InjectionMetadata 对象来完成属性注入。以 AutowiredAnnotationBeanPostProcessor 为例：</p>
+<div align="center"><br><img src="/img/SpringIOC/AutowiredAnnotationBeanPostProcessor.png" alt="image"><br></div>
+
+<p>findAutowiringMetadata 方法能拿到使用了特定注解的属性(Field)、方法(Method)及依赖的关系保存到 checkedElements 集合<set>里，然后再执行自己的 inject 方法。</set></p>
+<div align="center"><br><img src="/img/SpringIOC/InjectionMetadata.png" alt="image"><br></div>
+
+<p>喏，终于快要完事了，来看 InjectedElement 的 inject 方法：</p>
+<div align="center"><br><img src="/img/SpringIOC/InjectionElement.png" alt="image"><br></div>
+
+<p>喏，还是用JDK反射完成的咯。讲道理，以前只知道反射能干嘛，但是不知道能用在什么地方。现在看看源码好多地方都用的反射。。。</p>
+<p>Spring容器看到这里差不多了，有空再看下SpringMVC的。。。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/14/linux-deploy/" rel="next" title="虚拟机设置固定IP及部署java项目">
+                <i class="fa fa-chevron-left"></i> 虚拟机设置固定IP及部署java项目
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/06/10/SpringMVC-container/" rel="prev" title="SpringMVC容器">
+                SpringMVC容器 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/AcFun.png" alt="Lollipop">
+          <p class="site-author-name" itemprop="name">Lollipop</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Jimmy2Angel" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:a1334416010@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-容器启动"><span class="nav-number">1.</span> <span class="nav-text">Spring 容器启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-加载-class-文件"><span class="nav-number">2.</span> <span class="nav-text">Spring 加载 class 文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解析spring-application-xml"><span class="nav-number">2.1.</span> <span class="nav-text">解析spring-application.xml</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-实例化-非懒加载单例bean"><span class="nav-number">3.</span> <span class="nav-text">Spring 实例化 非懒加载单例bean</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lollipop</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

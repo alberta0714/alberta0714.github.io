@@ -1,0 +1,783 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Zookeeper,分布式,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/apple-touch-icon.png?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="ZAB（ZooKeeper Atomic Broadcast 原子广播） 协议是为分布式协调服务 ZooKeeper 专门设计的一种支持崩溃恢复的原子广播协议。 在 ZooKeeper 中，主要依赖 ZAB 协议来实现分布式数据一致性，基于该协议，ZooKeeper 实现了一种主备模式的系统架构来保持集群中各个副本之间的数据一致性。">
+<meta name="keywords" content="Zookeeper,分布式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zookeeper ZAB 协议">
+<meta property="og:url" content="http://yoursite.com/2019/01/12/Zookeeper-ZAB协议/index.html">
+<meta property="og:site_name" content="小白爬坑之旅">
+<meta property="og:description" content="ZAB（ZooKeeper Atomic Broadcast 原子广播） 协议是为分布式协调服务 ZooKeeper 专门设计的一种支持崩溃恢复的原子广播协议。 在 ZooKeeper 中，主要依赖 ZAB 协议来实现分布式数据一致性，基于该协议，ZooKeeper 实现了一种主备模式的系统架构来保持集群中各个副本之间的数据一致性。">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-05-30T01:00:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Zookeeper ZAB 协议">
+<meta name="twitter:description" content="ZAB（ZooKeeper Atomic Broadcast 原子广播） 协议是为分布式协调服务 ZooKeeper 专门设计的一种支持崩溃恢复的原子广播协议。 在 ZooKeeper 中，主要依赖 ZAB 协议来实现分布式数据一致性，基于该协议，ZooKeeper 实现了一种主备模式的系统架构来保持集群中各个副本之间的数据一致性。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/01/12/Zookeeper-ZAB协议/">
+
+
+
+
+
+  <title>Zookeeper ZAB 协议 | 小白爬坑之旅</title>
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小白爬坑之旅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/12/Zookeeper-ZAB协议/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lollipop">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/AcFun.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小白爬坑之旅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Zookeeper ZAB 协议
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-12T11:06:49+08:00">
+                2019-01-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">Zookeeper</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>ZAB（ZooKeeper Atomic Broadcast 原子广播） 协议是为分布式协调服务 ZooKeeper 专门设计的一种支持崩溃恢复的原子广播协议。 在 ZooKeeper 中，主要依赖 ZAB 协议来实现分布式数据一致性，基于该协议，ZooKeeper 实现了一种主备模式的系统架构来保持集群中各个副本之间的数据一致性。<a id="more"></a></p>
+<h2 id="原子广播"><a href="#原子广播" class="headerlink" title="原子广播"></a>原子广播</h2><ul>
+<li><p>在zookeeper 的主备模式下，通过 zab 协议来保证集群中各个副本数据的一致性。 </p>
+</li>
+<li><p>zookeeper 使用的是单一的主进程来接收并处理所有的事务请求，并采用 zab 协议，把数据的状态变更以事务请求的形式广播到其他的节点 </p>
+</li>
+<li><p>数据更新（事务请求） 客户端每发送一个更新请求，ZooKeeper 都会生成一个全局唯一的递增编号，这个编号反映了所有事务操作的先后顺序， 这个唯一编号就是事务ID(ZXID)，只有更新请求才算是事务请求。</p>
+</li>
+<li><p>为保证按照事务的 <code>ZXID</code> 先后顺序来处理，Leader 服务器会分别为每个 Follower 服务器创建一个队列，并按事务的先后顺序放入队列中， 并按照 FIFO 的策略进行消息发送。收到需要处理的事务后，Follower 服务器会首先将其以事务日志的形式写入服务器的磁盘中，写入成功后 会向 Leader 服务器发送 ACK 响应。</p>
+</li>
+<li><p>当 Leader 服务器收到超过一半的 Follower 服务器的 ACK 响应后，会向所有 Follower 服务器广播 COMMIT 消息， 收到 COMMIT 消息的 Follower 服务器也会完成对事务的提交。 </p>
+</li>
+<li><p>如果接收到事务请求的是 Follower 服务器，它会将请求转发给 Leader 服务器处理。</p>
+</li>
+</ul>
+<h2 id="崩溃恢复"><a href="#崩溃恢复" class="headerlink" title="崩溃恢复"></a>崩溃恢复</h2><p>崩溃恢复是说 Leader 节点崩溃（或者是与过半集群机器失去通信）后，会在集群中重新选举出一个 Leader 节点，并且等原来的 Leader 节点恢复后加入到集群中，仍然能保证各节点数据的一致性。</p>
+<p>这就需要解决如下两个问题：</p>
+<ul>
+<li><strong><em>已经被旧 Leader <code>提交</code> 的 proposal 不能丢</em></strong></li>
+<li><strong><em>保证丢弃那些只在旧 Leader 上 <code>提出</code> 的 proposal</em></strong></li>
+</ul>
+<h3 id="不能丢的-proposal"><a href="#不能丢的-proposal" class="headerlink" title="不能丢的 proposal"></a>不能丢的 proposal</h3><p>场景：当 Leader 节点提出一个 proposal 并发送给其他 Follower 节点，当 Leader 收到足够数量 Follower 的 ACKs 后，就向各个 Follower 广播 COMMIT 命令，同时也会在本地执行 COMMIT 并向连接的客户端返回「成功」。<br>但是如果在各个 Follower 在收到 COMMIT 命令前 Leader 就挂了，导致剩下的服务器并没有执行都这条消息。</p>
+<p>如何解决以上这种情况：已经被 Leader 节点 COMMIT 的 proposal 不能丢呢？</p>
+<ol>
+<li>选举拥有最大 <code>ZXID</code> 的 proposal 的节点作为新的 Leader。由于 Leader 上所有 proposal 被 COMMIT 之前都要有足够数量的 Follower 的 ACKs，<br>即足够数量的 Follower 节点上都有这个被 COMMIT 的 proposal，因此被选举出来的新 Leader 上保存了所有被 COMMIT 的 proposal。</li>
+<li>新的 Leader 将自己的未被提交 proposal 进行 COMMIT。</li>
+<li>新的 Leader 和 Follower 进行先进先出队列，先将自己有但是 Follower 没有的 proposal 发送给 Follower，<br>再将这些 proposal 的 COMMIT 命令广播给 Follower节点，确保所有的 Follower 处理了所有的消息。</li>
+</ol>
+<p>通过如上策略可以保证已经被旧 Leader <code>提交</code>的 proposal 不会丢失。</p>
+<p>注：<code>ZXID</code> 是 64 位，高 32 是纪元（epoch）编号，每经过一次 Leader 选举产生一个新的 Leader，新 Leader 会将 epoch 号 +1。<br>    低 32 位是消息计数器，每接收到一条消息这个值 +1，新 Leader 选举后这个值重置为 0。</p>
+<h3 id="保证丢弃的-proposal"><a href="#保证丢弃的-proposal" class="headerlink" title="保证丢弃的 proposal"></a>保证丢弃的 proposal</h3><p>场景：当 Leader 节点提出一个 proposal 后立即崩溃了，导致所有的 Follower 节点都没有收到这个 proposal。<br>当该节点从崩溃状态恢复后以 Follower 角色重连上新的 Leader，如果他依旧保留这个 proposal 的状态，与集群其他节点的状态是不一致的。所以需要丢弃。</p>
+<p>解决方案如下：<br>当旧的 Leader 作为 Follower 接入新的 Leader 后，新的 Leader 会让它将所有的拥有旧的 epoch 号的未被 COMMIT 的 proposal 清除。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>Zookeeper 通过投票（半数通过则通过）选举 Leader 节点</li>
+<li>Leader 节点负责接收客户端事务请求并广播处理</li>
+<li>Leader 将客户端事务请求以 proposal 形式广播给 Follower 节点，并等待 ACK 响应。如果收到过半数量的 Follower 节点的 ACK 响应则向 Follower 节点广播 COMMIT 命令，Follower 节点受到 COMMIT 命令则对事务进行提交处理。</li>
+<li>Leader 节点崩溃恢复后，已经被 Leader 节点 COMMIT 的 proposal 不能丢</li>
+<li>Leader 节点崩溃恢复后，保证丢弃那些只在旧 Leader 上 <code>提出</code> 的 proposal</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Zookeeper/" rel="tag"># Zookeeper</a>
+          
+            <a href="/tags/分布式/" rel="tag"># 分布式</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/27/SkyWalking-Collector源码浅析/" rel="next" title="SkyWalking Collector源码浅析">
+                <i class="fa fa-chevron-left"></i> SkyWalking Collector源码浅析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/12/Zookeeper-Watcher机制/" rel="prev" title="Zookeeper Watcher 机制">
+                Zookeeper Watcher 机制 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/AcFun.png" alt="Lollipop">
+          <p class="site-author-name" itemprop="name">Lollipop</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Jimmy2Angel" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:a1334416010@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#原子广播"><span class="nav-number">1.</span> <span class="nav-text">原子广播</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#崩溃恢复"><span class="nav-number">2.</span> <span class="nav-text">崩溃恢复</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#不能丢的-proposal"><span class="nav-number">2.1.</span> <span class="nav-text">不能丢的 proposal</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#保证丢弃的-proposal"><span class="nav-number">2.2.</span> <span class="nav-text">保证丢弃的 proposal</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lollipop</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

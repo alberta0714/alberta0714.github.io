@@ -1,0 +1,774 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="SpringMVC,Spring,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/apple-touch-icon.png?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="SpringMVC容器之前分析了过 Spring 的启动过程了，今天看下 SpringMVC 的启动。一样的，我们先看下 web.xml，SpringMVC 是以 Servlet 配置出现的">
+<meta name="keywords" content="SpringMVC,Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringMVC容器">
+<meta property="og:url" content="http://yoursite.com/2017/06/10/SpringMVC-container/index.html">
+<meta property="og:site_name" content="小白爬坑之旅">
+<meta property="og:description" content="SpringMVC容器之前分析了过 Spring 的启动过程了，今天看下 SpringMVC 的启动。一样的，我们先看下 web.xml，SpringMVC 是以 Servlet 配置出现的">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/img/SpringMVC/DispatcherServletClass.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringMVC/initWebApplicationContext1.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringMVC/initWebApplicationContext2.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringMVC/DispatcherServlet-onRefresh.png">
+<meta property="og:image" content="http://yoursite.com/img/SpringMVC/DispatcherServlet-initHandlerMappings.png">
+<meta property="og:updated_time" content="2018-11-24T05:19:29.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringMVC容器">
+<meta name="twitter:description" content="SpringMVC容器之前分析了过 Spring 的启动过程了，今天看下 SpringMVC 的启动。一样的，我们先看下 web.xml，SpringMVC 是以 Servlet 配置出现的">
+<meta name="twitter:image" content="http://yoursite.com/img/SpringMVC/DispatcherServletClass.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/06/10/SpringMVC-container/">
+
+
+
+
+
+  <title>SpringMVC容器 | 小白爬坑之旅</title>
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小白爬坑之旅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/10/SpringMVC-container/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lollipop">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/AcFun.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小白爬坑之旅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                SpringMVC容器
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-10T13:12:19+08:00">
+                2017-06-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/SpringMVC/" itemprop="url" rel="index">
+                    <span itemprop="name">SpringMVC</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="SpringMVC容器"><a href="#SpringMVC容器" class="headerlink" title="SpringMVC容器"></a>SpringMVC容器</h2><p>之前分析了过 Spring 的启动过程了，今天看下 SpringMVC 的启动。一样的，我们先看下 web.xml，SpringMVC 是以 Servlet 配置出现的<a id="more"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&lt;context-param&gt;</span><br><span class="line">    &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;</span><br><span class="line">    &lt;param-value&gt;</span><br><span class="line">      classpath:spring-application.xml</span><br><span class="line">    &lt;/param-value&gt;</span><br><span class="line">  &lt;/context-param&gt;</span><br><span class="line"></span><br><span class="line">  &lt;listener&gt;</span><br><span class="line">    &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;</span><br><span class="line">  &lt;/listener&gt;</span><br><span class="line"></span><br><span class="line">&lt;servlet&gt;</span><br><span class="line">	&lt;servlet-name&gt;DispatcherServlet&lt;/servlet-name&gt;</span><br><span class="line">	&lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;</span><br><span class="line">	&lt;init-param&gt;</span><br><span class="line">	  &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;</span><br><span class="line">	  &lt;param-value&gt;classpath:spring-mvc.xml&lt;/param-value&gt;</span><br><span class="line">	&lt;/init-param&gt;</span><br><span class="line">	&lt;load-on-startup&gt;1&lt;/load-on-startup&gt;</span><br><span class="line">&lt;/servlet&gt;</span><br><span class="line">&lt;servlet-mapping&gt;</span><br><span class="line">	&lt;servlet-name&gt;DispatcherServlet&lt;/servlet-name&gt;</span><br><span class="line">	&lt;url-pattern&gt;*.do&lt;/url-pattern&gt;</span><br><span class="line">&lt;/servlet-mapping&gt;</span><br></pre></td></tr></table></figure>
+<p>之前分析了 ContextLoaderListener，实例化 IoC 容器，并将此容器实例注册到 ServletContext 中。我们先看下 DispatcherServlet 的类图及继承关系：</p>
+<div align="center"><br><img src="/img/SpringMVC/DispatcherServletClass.png"><br></div>
+
+<p>SpringMVC最核心的类就是 DispatcherServlet， 关于 Spring Context 的配置文件加载和创建是在 init() 方法中进行的，主要的调用顺序是 init–&gt;initServletBean–&gt;initWebApplicationContext 。 先来看一下 initWebApplicationContext 的实现：FrameworkServlet.java </p>
+<div align="center"><br><img src="/img/SpringMVC/initWebApplicationContext1.png"><br><img src="/img/SpringMVC/initWebApplicationContext2.png"><br></div>
+
+<p>先简单说下这些代码的功能：<br>514行：从 ServletContext 中获取 rootContext也就是SpringIOC容器<br>517行：如果一个 context 的实例被注入了，直接使用<br>538行：从 ServletContext 中获取 webApplicationContext也就是SpringMVC容器<br>543行：创建 SpringMVC 的容器，并将 rootContext 作为父容器<br>550行：刷新上下文（执行组件的初始化），这个方法由子类DispatchServlet的方法实现<br>556行：将 SpringMVC 容器作为属性设置进 ServletContext<br>这里多说一句，SpringMVC 容器在 ServletContext 中的属性名:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public String getServletContextAttributeName() &#123;</span><br><span class="line">	return SERVLET_CONTEXT_PREFIX + getServletName();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static final String SERVLET_CONTEXT_PREFIX = FrameworkServlet.class.getName() + &quot;.CONTEXT.&quot;;</span><br></pre></td></tr></table></figure></p>
+<p>而 SpringIOC 容器在 ServletContext 中的属性名：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE = WebApplicationContext.class.getName() + &quot;.ROOT&quot;;</span><br></pre></td></tr></table></figure></p>
+<p>前面的没什么好说的，我们看下 onRefresh() 方法，调用了 initStrategies() 方法：</p>
+<div align="center"><br><img src="/img/SpringMVC/DispatcherServlet-onRefresh.png"><br></div>
+
+<p>执行 MVC 的相关组件的初始化，我们以 HandlerMappings 为例看来看下：</p>
+<div align="center"><br><img src="/img/SpringMVC/DispatcherServlet-initHandlerMappings.png"><br></div>
+
+<p>detectAllHandlerMappings 默认为 true，从当前的 SpringMVC 容器及其父容器中查找所有的 HandlerMappings，否则只从当前的  SpringMVC 容器中查找 HandlerMapping，如果没有找到 handlerMappings，设置默认的 handlerMapping，默认值设置在  DispatcherServlet 同级目录的 DispatcherServlet.properties 中。</p>
+<h3 id="多说一句"><a href="#多说一句" class="headerlink" title="多说一句"></a>多说一句</h3><p>上面的 findWebApplicationContext()，createWebApplicationContext(rootContext) 之类的方法点进去看看也很容易懂，我就不贴源码了，然后 createWebApplicationContext 中会层层调用直到 AbstractApplicationContext的 refresh 方法来初始化 bean，这个方法在之前分析 Spring 启动的时候看过，这里也就不看了。</p>
+<p>还是那句话，以我现在水平分析源码并不指望能看懂并理解每一句每一行，但是看不懂的方法你就点进去看看，万一里面里面的东西你看过呢是不是，就怕看不懂然后觉得这行代码不重要就不看了。</p>
+<p>嗯？说完了？怎么感觉看完之前的<a href="https://jimmy2angel.github.io/2017/05/31/SpringIOC/" target="_blank" rel="noopener">Spring容器那点事</a>，再看这个好像也没什么了。我们再来简单说下 Spring 容器和 SpringMVC 容器的py(手动滑稽)关系。</p>
+<h2 id="Spring容器-和-SpringMVC容器的关系"><a href="#Spring容器-和-SpringMVC容器的关系" class="headerlink" title="Spring容器 和 SpringMVC容器的关系"></a>Spring容器 和 SpringMVC容器的关系</h2><p>ContextLoaderListener 中创建 ApplicationContext（SpringIOC容器）主要用于整个 Web 应用程序需要共享的一些组件 ，比如 DAO，数据库的 ConnectionFactory 等。而由 DispatcherServlet 创建的 ApplicationContext（SpringMVC容器）主要用于和该 Servlet 相关的一些组件 ，比如 Controller、ViewResovler 等。</p>
+<p>对于作用范围而言， 在 DispatcherServlet 中可以引用由 ContextLoaderListener 所创建的 ApplicationContext ，而反过来不行。<br>在 Spring 的具体实现上，这两个 ApplicationContext 都是通过 ServletContext 的 setAttribute 方法放到 ServletContext 中的。但是， ContextLoaderListener 会先于 DispatcherServlet 创建 ApplicationContext，DispatcherServlet 在创建 ApplicationContext 时会先找到由 ContextLoaderListener 所创建的 ApplicationContext，再将后者的 ApplicationContext 作为参数传给 DispatcherServlet 的 ApplicationContext 的 setParent() 方法，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wac.setParent(parent);</span><br></pre></td></tr></table></figure></p>
+<p>其中， wac 即为由 DisptcherServlet 创建的 ApplicationContext，而 parent 则为 ContextLoaderListener 创建的ApplicationContext 。此后，框架又会调用 ServletContext 的 setAttribute() 方法将 wac 加入到 ServletContext 中。</p>
+<p>当 Spring 在执行 ApplicationContext 的 getBean 时， 如果在自己 context 中找不到对应的 bean，则会在父容器中去找 。这也解释了为什么我们可以在 DispatcherServlet 中获取到由 ContextLoaderListener 对应的 ApplicationContext 中的 bean。举个例子就是，你可以在 controller 层中注入 service 层的 bean。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SpringMVC/" rel="tag"># SpringMVC</a>
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/31/SpringIOC/" rel="next" title="Spring容器那点事">
+                <i class="fa fa-chevron-left"></i> Spring容器那点事
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/20/HashMap/" rel="prev" title="JAVA8的HashMap">
+                JAVA8的HashMap <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/AcFun.png" alt="Lollipop">
+          <p class="site-author-name" itemprop="name">Lollipop</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Jimmy2Angel" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:a1334416010@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringMVC容器"><span class="nav-number">1.</span> <span class="nav-text">SpringMVC容器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#多说一句"><span class="nav-number">1.1.</span> <span class="nav-text">多说一句</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring容器-和-SpringMVC容器的关系"><span class="nav-number">2.</span> <span class="nav-text">Spring容器 和 SpringMVC容器的关系</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lollipop</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

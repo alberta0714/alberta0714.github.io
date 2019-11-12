@@ -1,0 +1,756 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="设计模式,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/apple-touch-icon.png?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="你可能看到标题会觉得这两个模式有啥关系啊，很好，这两个模式确实没有关系哈哈，但是我今天把这两个模式放在一起说还是有原因的。">
+<meta name="keywords" content="设计模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="装饰模式 和 代理模式">
+<meta property="og:url" content="http://yoursite.com/2017/04/25/DecorateAndProxy/index.html">
+<meta property="og:site_name" content="小白爬坑之旅">
+<meta property="og:description" content="你可能看到标题会觉得这两个模式有啥关系啊，很好，这两个模式确实没有关系哈哈，但是我今天把这两个模式放在一起说还是有原因的。">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2017-04-25T13:35:29.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="装饰模式 和 代理模式">
+<meta name="twitter:description" content="你可能看到标题会觉得这两个模式有啥关系啊，很好，这两个模式确实没有关系哈哈，但是我今天把这两个模式放在一起说还是有原因的。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/04/25/DecorateAndProxy/">
+
+
+
+
+
+  <title>装饰模式 和 代理模式 | 小白爬坑之旅</title>
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小白爬坑之旅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/25/DecorateAndProxy/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lollipop">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/AcFun.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小白爬坑之旅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                装饰模式 和 代理模式
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-25T21:35:29+08:00">
+                2017-04-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>你可能看到标题会觉得这两个模式有啥关系啊，很好，这两个模式确实没有关系哈哈，但是我今天把这两个模式放在一起说还是有原因的。<a id="more"></a></p>
+<h2 id="举个栗子"><a href="#举个栗子" class="headerlink" title="举个栗子"></a>举个栗子</h2><h3 id="装饰模式"><a href="#装饰模式" class="headerlink" title="装饰模式"></a>装饰模式</h3><p>Component:抽象构建<br>ConcreteComponent:具体构建类（被装饰类）<br>Decorator:装饰类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">interface Component&#123;</span><br><span class="line">    void method();</span><br><span class="line">&#125;</span><br><span class="line">class ConcreteComponent implements Component&#123;</span><br><span class="line">    public void method()&#123;</span><br><span class="line">        System.out.println(&quot;method&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class Decorator implements Component&#123;</span><br><span class="line">    private Component component;</span><br><span class="line">    public Decorator(Component component)&#123;</span><br><span class="line">        this.component = component;</span><br><span class="line">    &#125;</span><br><span class="line">    public void method()&#123;</span><br><span class="line">        System.out.println(&quot;PreDecorate&quot;);</span><br><span class="line">        component.method();</span><br><span class="line">        System.out.println(&quot;PostDecorate&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String args[])&#123;</span><br><span class="line">        ConcreteComponent concreteComponent = new ConcreteComponent();</span><br><span class="line">        Decorator decorator = new Decorator(concreteComponent);</span><br><span class="line">        decorator.method();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="代理模式"><a href="#代理模式" class="headerlink" title="代理模式"></a>代理模式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">interface Subject&#123;</span><br><span class="line">    void request();</span><br><span class="line">&#125;</span><br><span class="line">class RealSubject implements Subject&#123;</span><br><span class="line">    public void request()&#123;</span><br><span class="line">        System.out.println(&quot;request&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class Proxy implements Subject&#123;</span><br><span class="line">    private RealSubject realSubject;</span><br><span class="line">    public Proxy()&#123;</span><br><span class="line">        this.realSubject = new RealSubject();</span><br><span class="line">    &#125;</span><br><span class="line">    public void request()&#123;</span><br><span class="line">        System.out.println(&quot;PreProcess&quot;);</span><br><span class="line">        realSubject.request();</span><br><span class="line">        System.out.println(&quot;PostProcess&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class ProxyDemo &#123;</span><br><span class="line">    public static void main(String args[])&#123;</span><br><span class="line">        Proxy p = new Proxy();</span><br><span class="line">        p.request();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="栗子分析"><a href="#栗子分析" class="headerlink" title="栗子分析"></a>栗子分析</h2><p>上面的栗子中，第一个是装饰模式，第二个代理模式，在接口的实现上面以至于整个代码上面几乎都没有多大的差别。以至于很多刚开始学习设计模式的同学看的有点晕，分不清两个的区别在哪。我们先来看下代码上的区别在哪：</p>
+<h3 id="第一处区别"><a href="#第一处区别" class="headerlink" title="第一处区别"></a>第一处区别</h3><p>在客户端代码（也就是此处的测试代码）中，装饰模式先创建一个具体构建类（被装饰类），然后作为参数通过构造器创建一个装饰类。而代理模式中，直接创建一个代理类，此处你看不见被代理类是什么，也就是说被代理类对于客户端是透明的。</p>
+<h3 id="第二处区别"><a href="#第二处区别" class="headerlink" title="第二处区别"></a>第二处区别</h3><p>装饰类中，将客户端代码中传递过来了的被装饰类赋给装饰类持有的抽象构建引用<br>代理类中，持有的是被代理类引用，且在构造函数中创建一个被代理类实例。</p>
+<h3 id="比较分析"><a href="#比较分析" class="headerlink" title="比较分析"></a>比较分析</h3><p>这两个区别说的仅仅是第一个栗子中代码上的区别，但是至少可以看出来一点，被代理对象对于客户端来说是透明的。</p>
+<h2 id="再举一栗"><a href="#再举一栗" class="headerlink" title="再举一栗"></a>再举一栗</h2><h3 id="装饰模式-1"><a href="#装饰模式-1" class="headerlink" title="装饰模式"></a>装饰模式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">interface Arrangement &#123;</span><br><span class="line">    public void show();</span><br><span class="line">&#125;</span><br><span class="line">class Person implements Arrangement &#123;</span><br><span class="line">    private String name;</span><br><span class="line"></span><br><span class="line">    public Person(String name)&#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void show() &#123;</span><br><span class="line">        System.out.println(name + &quot;的搭配：&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">abstract class Dress implements Arrangement &#123;</span><br><span class="line">    private Arrangement arrangement;</span><br><span class="line">    public void Dress(Arrangement arrangement)&#123;</span><br><span class="line">        this.arrangement = arrangement;</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public void show() &#123;</span><br><span class="line">        if (arrangement != null)&#123;</span><br><span class="line">            arrangement.show();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class DKC extends Dress &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void show() &#123;</span><br><span class="line">        super.show();</span><br><span class="line">        System.out.println(&quot;大裤衩&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">class PX extends Dress &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void show() &#123;</span><br><span class="line">        super.show();</span><br><span class="line">        System.out.println(&quot;皮鞋&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Person person = new Person(&quot;小明&quot;);</span><br><span class="line">        DKC dkc = new DKC();</span><br><span class="line">        PX px = new PX();</span><br><span class="line"></span><br><span class="line">        dkc.Dress(person);</span><br><span class="line">        px.Dress(dkc);</span><br><span class="line">        px.show();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="代理模式-1"><a href="#代理模式-1" class="headerlink" title="代理模式"></a>代理模式</h3><p>Girl:被追求的妹子<br>GiveGift:送礼物<br>Suitor：真实的追求者（由于比较害羞，找了一个代理帮自己追）<br>Proxy:代理类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">class Girl &#123;</span><br><span class="line">    private String name;</span><br><span class="line">    public Girl(String name)&#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">interface GiveGift &#123;</span><br><span class="line">    public void GiveFlowers();</span><br><span class="line">    public void GiveDove();</span><br><span class="line">    public void GiveDolls();</span><br><span class="line">&#125;</span><br><span class="line">class Suitor implements GiveGift &#123;</span><br><span class="line">    private Girl girl;</span><br><span class="line">    public Suitor(Girl girl)&#123;</span><br><span class="line">        this.girl = girl;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void GiveFlowers() &#123;</span><br><span class="line">        System.out.println(girl.getName()+&quot;,送你花！&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void GiveDove() &#123;</span><br><span class="line">        System.out.println(girl.getName()+&quot;,送你巧克力！&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void GiveDolls() &#123;</span><br><span class="line">        System.out.println(girl.getName()+&quot;,送你洋娃娃！&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Proxy implements GiveGift &#123;</span><br><span class="line">    private Suitor suitor;</span><br><span class="line">    public Proxy(Girl girl)&#123;</span><br><span class="line">        this.suitor = new Suitor(girl);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void GiveFlowers() &#123;</span><br><span class="line">        suitor.GiveFlowers();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void GiveDove() &#123;</span><br><span class="line">        suitor.GiveDove();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void GiveDolls() &#123;</span><br><span class="line">        suitor.GiveDolls();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Girl girl = new Girl(&quot;marry&quot;);</span><br><span class="line">        Proxy proxy = new Proxy(girl);</span><br><span class="line">        proxy.GiveDolls();</span><br><span class="line">        proxy.GiveDove();</span><br><span class="line">        proxy.GiveFlowers();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>结合这个栗子再来说明一下两个模式分别是什么。</p>
+<h3 id="装饰模式是什么"><a href="#装饰模式是什么" class="headerlink" title="装饰模式是什么"></a>装饰模式是什么</h3><p>装饰模式可以说就是在已有功能的基础上添加更多的功能，把每个要添加的功能都放在一个单独的类中，并让这个类包装被装饰对象，然后在执行特定任务时，客户端代码就可以在运行时根据需要自由组合，按顺序地使用这些装饰功能。</p>
+<h3 id="代理模式是什么"><a href="#代理模式是什么" class="headerlink" title="代理模式是什么"></a>代理模式是什么</h3><p>代理模式就是为一个对象提供一个代理并控制着对这个对象的访问。并且被代理对象对于客户端代码是透明的。就像最后这个栗子中，客户端代码并不知道真实的追求者是谁。代理类控制着真实追求着的访问，当然也可以添加一些功能什么的（就像装饰模式那样）。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>现在理解了两个模式之后，就会发现两个模式的目的并没有什么关联。完全没必要纠结像第一个栗子中的代码相似问题。要说真实应用的话，JDK的IO包中的BufferedInputstream就是一个装饰类，Spring的AOP就用的是代理，不过是动态代理而已。<br>最后推荐学习设计模式的小伙伴们有兴趣可以看一下《大话设计模式》这本书，通过讲故事的形式把道理给讲明白了，个人还是觉得蛮好的。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/22/mybatis-mapper/" rel="next" title="源码解析mapper接口代理">
+                <i class="fa fa-chevron-left"></i> 源码解析mapper接口代理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/14/linux-deploy/" rel="prev" title="虚拟机设置固定IP及部署java项目">
+                虚拟机设置固定IP及部署java项目 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/AcFun.png" alt="Lollipop">
+          <p class="site-author-name" itemprop="name">Lollipop</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Jimmy2Angel" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:a1334416010@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#举个栗子"><span class="nav-number">1.</span> <span class="nav-text">举个栗子</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#装饰模式"><span class="nav-number">1.1.</span> <span class="nav-text">装饰模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代理模式"><span class="nav-number">1.2.</span> <span class="nav-text">代理模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#栗子分析"><span class="nav-number">2.</span> <span class="nav-text">栗子分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一处区别"><span class="nav-number">2.1.</span> <span class="nav-text">第一处区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二处区别"><span class="nav-number">2.2.</span> <span class="nav-text">第二处区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#比较分析"><span class="nav-number">2.3.</span> <span class="nav-text">比较分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#再举一栗"><span class="nav-number">3.</span> <span class="nav-text">再举一栗</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#装饰模式-1"><span class="nav-number">3.1.</span> <span class="nav-text">装饰模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代理模式-1"><span class="nav-number">3.2.</span> <span class="nav-text">代理模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#装饰模式是什么"><span class="nav-number">3.3.</span> <span class="nav-text">装饰模式是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代理模式是什么"><span class="nav-number">3.4.</span> <span class="nav-text">代理模式是什么</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lollipop</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

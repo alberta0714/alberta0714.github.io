@@ -1,0 +1,981 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Zookeeper,分布式,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/apple-touch-icon.png?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="前面两篇文章介绍了 Zookeeper 的 Watcher 机制以及 Session 机制，下面分别从客户端和服务端两个方面来看下 Zookeeper 是怎么处理的。">
+<meta name="keywords" content="Zookeeper,分布式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zookeeper 客户端和服务端">
+<meta property="og:url" content="http://yoursite.com/2019/01/12/Zookeeper-客户端和服务端/index.html">
+<meta property="og:site_name" content="小白爬坑之旅">
+<meta property="og:description" content="前面两篇文章介绍了 Zookeeper 的 Watcher 机制以及 Session 机制，下面分别从客户端和服务端两个方面来看下 Zookeeper 是怎么处理的。">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-01-12T06:44:39.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Zookeeper 客户端和服务端">
+<meta name="twitter:description" content="前面两篇文章介绍了 Zookeeper 的 Watcher 机制以及 Session 机制，下面分别从客户端和服务端两个方面来看下 Zookeeper 是怎么处理的。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/01/12/Zookeeper-客户端和服务端/">
+
+
+
+
+
+  <title>Zookeeper 客户端和服务端 | 小白爬坑之旅</title>
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小白爬坑之旅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/12/Zookeeper-客户端和服务端/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lollipop">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/AcFun.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小白爬坑之旅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Zookeeper 客户端和服务端
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-12T14:41:25+08:00">
+                2019-01-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">Zookeeper</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前面两篇文章介绍了 Zookeeper 的 Watcher 机制以及 Session 机制，下面分别从客户端和服务端两个方面来看下 Zookeeper 是怎么处理的。<a id="more"></a></p>
+<h1 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h1><p>Zookeeper 客户端主要由以下几个核心组件组成：</p>
+<ul>
+<li><strong>Zookeeper</strong> 实例：客户端的入口。</li>
+<li><strong>ClientWatchManager</strong>：客户端 Watcher 管理器。</li>
+<li><strong>HostProvider</strong>：客户端地址列表管理器。</li>
+<li><strong>ClientCnxn</strong>：客户端核心线程，其内部又包含两个线程，SendThread 和 EventThread。前者是一个 I/O 线程，主要负责 Zookeeper 客户端与服务端之间的网络 I/O 通信；后者是一个事件线程，主要负责对服务端事件进行处理。</li>
+</ul>
+<p>客户端整个初始化和启动过程大体分为以下三个步骤：</p>
+<ol>
+<li><em>设置默认 Watcher</em></li>
+<li><em>设置 Zookeeper 服务器地址列表</em></li>
+<li><em>创建 ClientCnxn</em></li>
+</ol>
+<h2 id="一次会话的创建过程"><a href="#一次会话的创建过程" class="headerlink" title="一次会话的创建过程"></a>一次会话的创建过程</h2><h3 id="初始化阶段"><a href="#初始化阶段" class="headerlink" title="初始化阶段"></a>初始化阶段</h3><ol>
+<li><p><em>初始化 Zookeeper 对象。</em></p>
+<p>调用构造方法实例话一个 Zookeeper 对象，在初始化过程中，会创建一个客户端的 Watcher 管理器：ClientWatchManager（默认实现为 ZKWatchManager）。</p>
+</li>
+<li><p><em>设置会话默认 Watcher。</em></p>
+<p>如果构造方法中传入了一个 Watcher 对象，那么客户端会将这个对象作为默认 Watcher 保存在 ZKWatchManager 中。</p>
+</li>
+<li><p><em>构造 Zookeeper 服务器地址列表管理器：HostProvider。</em></p>
+<p>对于构造方法中传入的服务器地址，客户端会将其放在服务器地址列表管理器 HostProvider 中。</p>
+</li>
+<li><p><em>创建并初始化客户端网络连接器：ClientCnxn。</em></p>
+<p>客户端会首先创建一个网络连接器 ClientCnxn，用来管理客户端和服务端的网络交互。另外，客户端在创建 ClientCnxn 的同时还会初始化客户端的两个核心队列 outgoingQueue 和 pendingQueue，分别作为客户端的请求发送队列和服务端响应的等待队列。</p>
+<p>ClientCnxn 连接器的底层 I/O 处理器是 ClientCnxnSocket，因此在这一步中，客户端还会同时创建 ClientCnxnSocket 处理器。</p>
+</li>
+<li><p><em>初始化 SendThread 和 EventThread。</em></p>
+<p>客户端会创建两个核心网络线程 SendThread 和 EventThread，前者用于管理客户端和服务端之间的所有网络 I/O，后者则用于进行客户端的事件处理。同时客户端还会将 ClientCnxnSocket 分配给 SendThread 作为底层网络 I/O 处理器，并初始化 EventThread 的待处理事件队列 waitingEvents，用于存放所有等待被客户端处理的事件。</p>
+</li>
+</ol>
+<h3 id="会话创建阶段"><a href="#会话创建阶段" class="headerlink" title="会话创建阶段"></a>会话创建阶段</h3><ol start="6">
+<li><p><em>启动 SendThread 和 EventThread。</em></p>
+<p>SendThread 首先会判断当前客户端的状态，进行一系列清理性工作，为客户端发送 “会话创建” 请求做准备。</p>
+</li>
+<li><p><em>获取一个服务器地址。</em></p>
+<p>在创建 TCP 连接前，SendThread 首先需要获取一个服务器的目标地址，这通常是从 HostProvider 中随机获取出一个地址，然后委托给 ClientCnxnSocket 去创建与服务器之间的 TCP 连接。</p>
+</li>
+<li><p><em>创建 TCP 连接。</em></p>
+<p>获取到一个服务器地址后，ClientCnxnSocket 负责和服务器创建一个 TCP 长连接。</p>
+</li>
+<li><p><em>构造 ConnectRequest 请求。</em></p>
+<p>上一步只是纯粹地从网络 TCP 层面完成了客户端和服务端之间的 Socket 连接，但远未完成 Zookeeper 客户端的会话创建。</p>
+<p>SendThread 会负责根据当前客户端的实际设置，构造一个 ConnectRequest 请求，该请求代表了客户端试图和服务器创建一个会话。同时，Zookeeper 客户端还会进一步将请求包装成网络 I/O 层的 Packet 对象，放入请求发送队列 outgoingQueue 中去。</p>
+</li>
+<li><p><em>发送请求。</em></p>
+<p>当客户端请求准备完毕后，就可以开始向服务端发送请求了。ClientCnxnSocket 负责从 outgoingQueue 中取出一个待发送的 Packet 对象，将其序列化成 ByteBuffer 后，向服务端进行发送。</p>
+</li>
+</ol>
+<h3 id="响应处理阶段"><a href="#响应处理阶段" class="headerlink" title="响应处理阶段"></a>响应处理阶段</h3><ol start="11">
+<li><p><em>接收服务端响应。</em></p>
+<p>ClientCnxnSocket 接收到服务端的响应后，会首先判断当前客户端状态是否是 “已初始化”，如果尚未完成初始化，那么就认为该响应一定是会话创建请求的响应，直接交由 readConnectResult 方法来处理该响应。</p>
+</li>
+<li><p><em>处理 Response。</em></p>
+<p>ClientCnxnSocket 会对接收到的服务端响应进行反序列化，得到 ConnectResponse 对象，并从中获取到 Zookeeper 服务端分配的会话 sessionId。</p>
+</li>
+<li><p><em>连接成功。</em></p>
+<p>连接成功后，一方面需要通知 SendThread 线程，进一步对客户端进行会话参数设置，包括 readTimeout 和 connectTimeout 等，并更新客户端状态。另一方面，需要通知地址管理器 HostProvider 当前成功连接的服务器地址。</p>
+</li>
+<li><p><em>生成事件 SyncConnected-None。</em></p>
+<p>为了能够让上层应用感知到会话的成功创建，SendThread 会生成一个 SyncConnected-None 事件，代表客户端和服务器会话创建成功，并将该事件传递给 EventThread 线程。</p>
+</li>
+<li><p><em>查询 Watcher。</em></p>
+<p>EventThread 线程收到事件后，会从 ZKWatchManager 管理器中查询出对应的 Watcher，针对 SyncConnected-None 事件，那么就直接找出步骤 2 中存储的默认 Watcher，然后将其放到 EventThread 的 waitingEvents 队列中去。</p>
+</li>
+<li><p><em>处理事件。</em></p>
+<p>EventThread 不断地从 waitingEvents 队列中取出待处理的 Watcher 对象，然后直接调用该对象的 process 接口方法，以达到触发 Watcher 的目的。</p>
+</li>
+</ol>
+<h2 id="ClientCnxn-网络-I-O"><a href="#ClientCnxn-网络-I-O" class="headerlink" title="ClientCnxn: 网络 I/O"></a>ClientCnxn: 网络 I/O</h2><p>ClientCnxn 是 Zookeeper 客户端的核心工作类，负责维护客户端和服务端的网络连接并进行一系列网络通信。</p>
+<h3 id="Packet"><a href="#Packet" class="headerlink" title="Packet"></a>Packet</h3><p>Packet 是 ClientCnxn 内部定义的一个对协议层的封装，作为 Zookeeper 中请求和响应的载体，其中包含了最基本的请求头（requestHeader）、响应头（replyHeader）、请求体（request）、响应体（response）、节点路径（clientPath／serverPath）和注册的 Watcher（watchRegistration）等信息。</p>
+<p>针对 Packet 中这么多属性，是否都会在客户端和服务端之间进行网络传输呢？答案是否定的。Packet 的 createBB( ) 方法负责对 Packet 对象进行序列化，最终生成可用于底层网络传输的 ByteBuffer 对象。在这个过程中，只会将 requestHeader、request 和 readOnly 三个属性进行序列化，其余属性都保存在客户端的上下文中，不会进行与服务端之间的网络传输。</p>
+<h3 id="outgoingQueue-和-pendingQueue"><a href="#outgoingQueue-和-pendingQueue" class="headerlink" title="outgoingQueue 和 pendingQueue"></a>outgoingQueue 和 pendingQueue</h3><p>ClientCnxn 中有两个比较核心的 LinkedList<packet> 队列：outgoingQueue 和 pendingQueue。</packet></p>
+<ul>
+<li><p>outgoingQueue 是一个请求发送队列，用于存储那些需要发送到服务端的 Packet 集合。</p>
+</li>
+<li><p>pendingQueue 用于存储已经从客户端发送到服务端，但是需要等待服务端响应的 Packet 集合。</p>
+</li>
+</ul>
+<h3 id="ClientCnxnSocket：底层-Socket-通信层"><a href="#ClientCnxnSocket：底层-Socket-通信层" class="headerlink" title="ClientCnxnSocket：底层 Socket 通信层"></a>ClientCnxnSocket：底层 Socket 通信层</h3><p>ClientCnxnSocket 定义了底层 Socket 通信的接口。在 Zookeeper 中，其默认实现是 ClientCnxnSocketNIO。该实现类使用 Java 原生的 NIO 接口，其核心是 doIO 逻辑，主要负责对请求的发送和响应接受过程。</p>
+<h4 id="请求发送"><a href="#请求发送" class="headerlink" title="请求发送"></a>请求发送</h4><p>在正常情况下（即 TCP 连接正常且会话有效），会从 outgoingQueue 队列中取出一个<code>可发送</code>的 Packet 对象，同时生成一个客户端请求序号 XID 并将其设置到 Packet 请求头中，然后将其序列化后发送。那什么样的 Packet 是 <code>可发送</code> 的呢？在 outgoingQueue 中的 Packet 整体上是按照先进先出的顺序被处理的，但是如果检测到客户端和服务端之间正在处理 SASL 权限的话，那么那些不含请求头（requestHeader）的 Packet（例如会话创建请求）是可以被发送的，其余的都无法被发送。</p>
+<p>请求发送完毕后，会立即将该 Packet 保存到 pendingQueue 队列中，以便等待服务端响应返回后进行相应的处理。</p>
+<h4 id="响应接受"><a href="#响应接受" class="headerlink" title="响应接受"></a>响应接受</h4><p>客户端获取到来自服务端的响应数据后，根据不同的客户端请求类型，会进行不同的处理。</p>
+<ul>
+<li>如果检测到当前客户端还尚未进行初始化，那么说明当前客户端和服务端之间正在进行会话创建，那么直接将接收到的 ByteBuffer（incomingBuffer）反序列化成 ConnectResponse 对象。</li>
+<li>如果当前客户端已经处于正常的会话周期，并且接收到的服务端响应是一个事件，那么 Zookeeper 客户端会将接收到的 ByteBuffer（incomingBuffer）反序列化成 WatcherEvent 对象，并将该事件放入待处理队列中。</li>
+<li>如果是一个常规的请求响应（指的是 Create、GetData 和 Exist 等操作请求），那么会从 pendingQueue 队列中取出一个 Packet 来进行相应的处理。Zookeeper 客户端首先会校验服务端响应中包含的 XID 值来确保请求处理的顺序性，然后将接收到的 ByteBuffer（incomingBuffer）反序列化成 Response 对象。</li>
+</ul>
+<p>最后，会在 finishPacket 方法中处理 Watcher 注册等逻辑。</p>
+<h3 id="SendThread-和-EventThread"><a href="#SendThread-和-EventThread" class="headerlink" title="SendThread 和 EventThread"></a>SendThread 和 EventThread</h3><h4 id="SendThread"><a href="#SendThread" class="headerlink" title="SendThread"></a>SendThread</h4><p>SendThread 是 ClientCnxn 内部一个核心的 I/O 调度线程，用于管理客户端和服务端之间的所有网络 I/O 操作。</p>
+<p>在客户端实际运行过程中，一方面，SendThread 维护了客户端和服务端之间的会话生命周期，其通过在一定的周期频率内向服务端发送一个 PING 包来实现心跳检测。同时，在会话周期内，如果客户端和服务端之间出现 TCP 连接断开的情况，那么就会自动且透明地完成重连操作。</p>
+<p>另一方面，SendThread 管理了客户端所有的请求发送和响应接收操作，其将上层客户端 API 操作转换成相应的请求协议并发送到服务端，并完成对同步调用的返回和异步调用的回调。同时，SendThread 还负责将来自服务端的事件传递给 EventThread 去处理。</p>
+<h4 id="EventThread"><a href="#EventThread" class="headerlink" title="EventThread"></a>EventThread</h4><p>EventThread 是 ClientCnxn 内部另一个核心线程，负责客户端的事件处理。并触发客户端注册的 Watcher 监听。其中的 waitingEvents 队列，用于临时存放那些需要被触发的 Object，包括那些客户端注册的 Watcher 和异步接口中注册的回调器 AsyncCallback。</p>
+<p>同时，EventThread 会不断地从 waitingEvents 中取出 Object，识别出具体类型（Watcher 或者 AsyncCallback），并分别调用 process 和 processResult 接口方法来实现对事件的触发和回调。</p>
+<h1 id="服务器启动"><a href="#服务器启动" class="headerlink" title="服务器启动"></a>服务器启动</h1><h2 id="单机版服务器启动"><a href="#单机版服务器启动" class="headerlink" title="单机版服务器启动"></a>单机版服务器启动</h2><p>Zookeeper 服务器的启动，大体可以分为以下五个主要步骤：配置文件解析、初始化数据管理器、初始化网络 I/O 管理器、数据恢复和对外服务。启动流程如下：</p>
+<h3 id="预启动"><a href="#预启动" class="headerlink" title="预启动"></a>预启动</h3><ol>
+<li><p><strong><em>统一由 QuorumPeerMain 作为启动类。</em></strong></p>
+<p>无论是单机模式还是集群模式，在 <code>zkServer.cmd</code> 和 <code>zkserver.sh</code> 两个脚本中，都配置了使用 QuorumPeerMain 作为启动入口类。</p>
+</li>
+<li><p><strong><em>解析配置文件 zoo.cfg。</em></strong></p>
+<p>Zookeeper 首先会进行配置文件的解析，<code>zoo.cfg</code> 配置了 Zookeeper 运行时的基本参数，包括 tickTime、dataDir、clientPort 等参数。</p>
+</li>
+<li><p><strong><em>创建并启动历史文件清理器 DatadirCleanupManager。</em></strong></p>
+<p>自动清理历史数据文件的机制，包括对事务日志和快照数据文件进行定时清理。</p>
+</li>
+<li><p><strong><em>判断当前是集群模式还是单机模式的启动。</em></strong></p>
+<p>如果是单机模式，则委托给 ZooKeeperServerMain 进行启动处理。</p>
+</li>
+<li><p><strong><em>再次进行配置文件的解析。</em></strong></p>
+</li>
+<li><p><strong><em>创建服务器实例 ZookeeperServer。</em></strong></p>
+<p>ZookeeperServer 是单机版 Zookeeper 服务端最为核心的实体类。Zookeeper 首先会进行服务器实例的创建，接下去的步骤则是对该服务器实例的初始化工作，包括连接器、内存数据库和请求处理器等组件的初始化。</p>
+</li>
+</ol>
+<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><ol>
+<li><p><strong><em>创建服务器统计器 ServerStats。</em></strong></p>
+<p>ServerStats 是服务器运行时的统计器，包含了最基本的运行时信息。如packetsSent（服务端向客户端发送的响应包次数）、packetsReceived（服务端接收到来自客户端的请求包次数）等。</p>
+</li>
+<li><p><strong><em>创建 Zookeeper 数据管理器 FileTxnSnapLog。</em></strong></p>
+<p>FileTxnSnapLog 是 Zookeeper 上层服务器和底层数据存储之间的对接层，提供了一系列操作数据文件的接口，包括事务日志文件和快照数据文件。Zookeeper 根据 <code>zoo.cfg</code> 文件中解析出来的快照数据目录 dataDir 和 事务日志目录 dataLogDir 来创建 FileTxnSnapLog。</p>
+</li>
+<li><p><strong><em>设置服务器 tickTime 和会话超时时间限制。</em></strong></p>
+</li>
+<li><p><strong><em>创建 ServerCnxnFactory。</em></strong></p>
+<p>可以通过配置系统属性 zookeeper.serverCnxnFactory 来指定使用 Zookeeper 自己实现的 NIO 还是使用 Netty 框架来作为 Zookeeper 服务端网络连接工厂。</p>
+</li>
+<li><p><strong><em>初始化 ServerCnxnFactory。</em></strong></p>
+<p>Zookeeper 首先会初始化一个 Thread，作为整个 ServerCnxnFactory 的主线程，然后再初始化 NIO 服务器。</p>
+</li>
+<li><p><strong><em>启动 ServerCnxnFactory 主线程。</em></strong></p>
+<p>步骤 5 中已经初始化的主线程 ServerCnxnFactory 的主逻辑（run 方法）。需要注意的是，虽然这里 Zookeeper 的 NIO 服务器已经对外开放端口，客户端能够访问到 Zookeeper 的客户端服务端口 2181，但是此时 Zookeeper 服务器是无法正常处理客户端请求的。</p>
+</li>
+<li><p><strong><em>恢复本地数据。</em></strong></p>
+<p>每次在 Zookeeper 启动的时候，都需要从本地快照数据文件和事务日志文件中进行数据恢复。</p>
+</li>
+<li><p><strong><em>创建并启动会话管理器 SessionTracker。</em></strong></p>
+<p>在 Zookeeper 启动阶段，会创建一个会话管理器 SessionTracker。SessionTracker 初始化完毕后，Zookeeper 就会立即开始会话管理器的会话超时检查。</p>
+</li>
+<li><p><strong><em>初始化 Zookeeper 的请求处理链。</em></strong></p>
+<p>Zookeeper 的请求处理方式是典型的责任链模式的实现，在 Zookeeper 服务器上，会有多个请求处理器依次来处理一个客户端请求。在服务器启动的时候，会将这些请求处理器串联起来形成一个请求处理链。单机版服务器的请求处理链主要包括 PrepRequestProcessor、SyncRequestProcessor 和 FinalRequestProcessor 三个请求处理器。</p>
+</li>
+<li><p><strong><em>注册 JMX 服务。</em></strong></p>
+<p>Zookeeper 会将服务器运行时的一些信息以 JMX 的方式暴露给外部。</p>
+</li>
+<li><p><strong><em>注册 Zookeeper 服务器实例。</em></strong></p>
+<p>在步骤 6 中，Zookeeper 已经将 ServerCnxnFactory 主线程启动，但是同时我们提到此时 Zookeeper 依旧无法处理客户端请求，原因就是此时网络层尚不能够访问 Zookeeper 服务器实例。在经过后续步骤的初始化后，Zookeeper 服务器实例已经初始化完毕，只需要注册给 ServerCnxnFactory 即可，之后，Zookeeper 就可以对外提供正常的服务了。</p>
+</li>
+</ol>
+<h2 id="集群版服务器启动"><a href="#集群版服务器启动" class="headerlink" title="集群版服务器启动"></a>集群版服务器启动</h2><h3 id="预启动-1"><a href="#预启动-1" class="headerlink" title="预启动"></a>预启动</h3><ol>
+<li><p><strong><em>统一由 QuorumPeerMain 作为启动类。</em></strong></p>
+</li>
+<li><p><strong><em>解析配置文件 zoo.cfg。</em></strong></p>
+</li>
+<li><p><strong><em>创建并启动历史文件清理器 DatadirCleanupManager。</em></strong></p>
+</li>
+<li><p><strong><em>判断当前是集群模式还是单机模式的启动。</em></strong></p>
+<p>在集群模式中，由于已经在 <code>zoo.cfg</code> 中配置了多个服务器地址，因此此处选择集群模式启动。</p>
+</li>
+</ol>
+<h3 id="初始化-1"><a href="#初始化-1" class="headerlink" title="初始化"></a>初始化</h3><ol>
+<li><p><strong><em>创建 ServerCnxnFactory。</em></strong></p>
+</li>
+<li><p><strong><em>初始化 ServerCnxnFactory。</em></strong></p>
+</li>
+<li><p><strong><em>创建 Zookeeper 数据管理器 FileTxnSnapLog。</em></strong></p>
+</li>
+<li><p><strong><em>创建 QuorumPeer 实例。</em></strong></p>
+<p>QuorumPeer 是集群模式下特有的对象，是 Zookeeper 服务器实例（ZookeeperServer）的托管者，从集群层面看，QuorumPeer 代表了 Zookeeper 集群中的一台机器。在运行期间，QuorumPeer 会不断检测当前服务器实例的运行状态，同时根据情况发起 Leader 选举。</p>
+</li>
+<li><p><strong><em>创建内存数据库 ZKDatabase。</em></strong></p>
+<p>ZKDatabase 是 Zookeeper 的内存数据库，负责管理 Zookeeper 的所有会话记录以及 DataTree 和 事务日志的存储。</p>
+</li>
+<li><p><strong><em>初始化 QuorumPeer。</em></strong></p>
+<p>将一些核心的组件注册到 QuorumPeer 中去，包括 FileTxnSnapLog、ServerCnxnFactory 和 ZKDatabase。同时 Zookeeper 还会对 QuorumPeer 配置一些参数，包括服务器地址列表、Leader 选举算法和会话超时时间限制等。</p>
+</li>
+<li><p><strong><em>恢复本地数据。</em></strong></p>
+</li>
+<li><p><strong><em>启动 ServerCnxnFactory。</em></strong></p>
+</li>
+</ol>
+<h3 id="Leader-选举"><a href="#Leader-选举" class="headerlink" title="Leader 选举"></a>Leader 选举</h3><ol>
+<li><p><strong><em>初始化 Leader 选举。</em></strong></p>
+<p>Zookeeper 首先会根据自身的 SID（服务器 ID）、lastLoggerdZxid（最新的 ZXID）和当前的服务器epoch（currentEpoch）来生成一个初始化的投票——<code>简单地讲，在初始化过程中，每个服务器都会给自己投票</code>。</p>
+<p>在初始化阶段，Zookeeper 会首先创建 Leader 选举所需的网络 I/O 层 QuorumCnxManager，同时启动对 Leader 选举端口的监听，等待集群中其他服务器创建连接。</p>
+</li>
+<li><p><strong><em>注册 JMX 服务。</em></strong></p>
+</li>
+<li><p><strong><em>检测当前服务器状态。</em></strong></p>
+<p>上文说到 QuorumPeer 是 Zookeeper 服务器实例的托管者，在运行期间，QuorumPeer 的核心工作就是不断检查当前服务器的状态，并作出相应的处理。在正常情况下，Zookeeper 服务器的状态在 LOOKING、LEADING 和 FOLLOWING／OBSERVING 之间进行切换。而在启动阶段，QuorumPeer 的初始化状态是 LOOKING，因此开始进行 Leader 选举。</p>
+</li>
+<li><p><strong><em>Leader 选举。</em></strong></p>
+<p>简单的讲，Leader 选举过程就是一个集群中所有机器相互之间进行一系列投票，选举产生最合适的机器称为 Leader，同时其他机器称为 Follower 或是 Observer 的集群机器角色初始化过程。</p>
+<p>关于 Leader 选举算法，简而言之，就是<code>集群中哪个机器处理的数据越新（通常我们根据每个服务器处理过的最大 ZXID 来比较确定其数据是否更新），其越有可能成为 Leader。当然，如果集群中所有机器处理的 ZXID 一致的话，那么 SID 最大的服务器成为 Leader</code>。</p>
+</li>
+</ol>
+<h3 id="Leader-和-Follower-启动期交互过程"><a href="#Leader-和-Follower-启动期交互过程" class="headerlink" title="Leader 和 Follower 启动期交互过程"></a>Leader 和 Follower 启动期交互过程</h3><ol>
+<li><p><strong><em>创建 Leader 服务器和 Follower 服务器。</em></strong></p>
+<p>完成 Leader 选举后，每个服务器都会根据自己的服务器角色创建相应的服务器实例，并开始进行各自角色的主流程。</p>
+</li>
+<li><p><strong><em>Leader 服务器启动 Follower 接收器 LearnerCnxAcceptor。</em></strong></p>
+<p>在集群运行期间，Leader 服务器需要和所有其余的服务器（以下部分，我们使用 “Learner” 来指代这类机器）保持连接以确定集群的机器存活情况。LearnerCnxAcceptor 接收器用于负责接收所有非 Leader 服务器的连接请求。</p>
+</li>
+<li><p><strong><em>Learner 服务器开始和 Leader 建立连接。</em></strong></p>
+<p>所有的 Learner 服务器在启动完毕后，会从 Leader 选举的投票结果中找到当前集群中的 Leader 服务器，然后与其建立连接。</p>
+</li>
+<li><p><strong><em>Leader 服务器创建 LearnerHandler。</em></strong></p>
+<p>Leader 接收到来自其他机器的连接创建请求后，会创建一个 LearnerHandler 实例。每个 LearnerHandler 实例对应一个 Leader 与 Learner 服务器之间的连接，其负责 Leader 和 Learner 服务器之间几乎所有的消息通信和数据同步。</p>
+</li>
+<li><p><strong><em>向 Leader 注册。</em></strong></p>
+<p>当和 Leader 建立起连接后，Learner 就会开始向 Leader 进行注册——所谓的注册，其实就是将 Learner 服务器自己的基本信息发送给 Leader 服务器，我们称之为 LearnerInfo，包括当前服务器的 SID 和服务器处理的最新的 ZXID。</p>
+</li>
+<li><p><strong><em>Leader 解析 Learner 信息，计算新的 epoch。</em></strong></p>
+<p>Leader 服务器在接收到 Learner 的基本信息后，会解析出该 Learner 的 SID 和 ZXID，然后根据该 Learner 的 ZXID 解析出其对应的 epoch_of_learner，和当前 Leader 服务器的 epoch_of_leader 进行比较，如果该 learner 的 epoch 更大的话，那么更新 Leader 的 epoch：    <code>epoch_of_leader = epoch_of_learner + 1</code> ，然后，LearnerHandler 会进行等待，直到过半的 Learner 已经向 Leader 进行了注册，同时更新了 epoch_of_leader 之后，Leader 就可以确定当前集群的 epoch 了。</p>
+</li>
+<li><p><strong><em>发送 Leader 状态。</em></strong></p>
+<p>计算出新的 epoch 之后，Leader 会将该信息以一个 LEADERINFO 消息的形式发送给 Learner，同时等待该 Learner 的响应。</p>
+</li>
+<li><p><strong><em>Learner 发送 ACK 消息。</em></strong></p>
+<p>Follower 在接收到来自 Leader 的 LEADERINFO 消息后，会解析出 epoch 和 ZXID，然后向 Leader 反馈一个 ACKEPOCH 响应。</p>
+</li>
+<li><p><strong><em>数据同步。</em></strong></p>
+<p>Leader 服务器接收到 Learner 的这个 ACK 消息后，就可以与其进行数据同步了。</p>
+</li>
+<li><p><strong><em>启动 Leader 和 Learner 服务器。</em></strong></p>
+<p>当有过半的 Learner 已经完成了数据同步，那么 Leader 和 Learner 服务器实例就可以开始启动了。</p>
+</li>
+</ol>
+<h3 id="Leader-和-Follower-启动"><a href="#Leader-和-Follower-启动" class="headerlink" title="Leader 和 Follower 启动"></a>Leader 和 Follower 启动</h3><ol>
+<li><p><strong><em>创建并启动会话管理器。</em></strong></p>
+</li>
+<li><p><strong><em>初始化 Zookeeper 的请求处理链。</em></strong></p>
+<p>和单机版服务器一样，集群模式下，每个服务器都会在启动阶段串联请求处理链，只是根据服务器角色不同，会有不同的请求处理链路。</p>
+</li>
+<li><p><strong><em>注册 JMX 服务。</em></strong></p>
+</li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Zookeeper/" rel="tag"># Zookeeper</a>
+          
+            <a href="/tags/分布式/" rel="tag"># 分布式</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/12/Zookeeper-Session机制/" rel="next" title="Zookeeper Session机制">
+                <i class="fa fa-chevron-left"></i> Zookeeper Session机制
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/02/19/Netty-入门使用总结/" rel="prev" title="Netty 入门使用总结">
+                Netty 入门使用总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/AcFun.png" alt="Lollipop">
+          <p class="site-author-name" itemprop="name">Lollipop</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Jimmy2Angel" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:a1334416010@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#客户端"><span class="nav-number">1.</span> <span class="nav-text">客户端</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一次会话的创建过程"><span class="nav-number">1.1.</span> <span class="nav-text">一次会话的创建过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化阶段"><span class="nav-number">1.1.1.</span> <span class="nav-text">初始化阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#会话创建阶段"><span class="nav-number">1.1.2.</span> <span class="nav-text">会话创建阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#响应处理阶段"><span class="nav-number">1.1.3.</span> <span class="nav-text">响应处理阶段</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ClientCnxn-网络-I-O"><span class="nav-number">1.2.</span> <span class="nav-text">ClientCnxn: 网络 I/O</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Packet"><span class="nav-number">1.2.1.</span> <span class="nav-text">Packet</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#outgoingQueue-和-pendingQueue"><span class="nav-number">1.2.2.</span> <span class="nav-text">outgoingQueue 和 pendingQueue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ClientCnxnSocket：底层-Socket-通信层"><span class="nav-number">1.2.3.</span> <span class="nav-text">ClientCnxnSocket：底层 Socket 通信层</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#请求发送"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">请求发送</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#响应接受"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">响应接受</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SendThread-和-EventThread"><span class="nav-number">1.2.4.</span> <span class="nav-text">SendThread 和 EventThread</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SendThread"><span class="nav-number">1.2.4.1.</span> <span class="nav-text">SendThread</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#EventThread"><span class="nav-number">1.2.4.2.</span> <span class="nav-text">EventThread</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#服务器启动"><span class="nav-number">2.</span> <span class="nav-text">服务器启动</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#单机版服务器启动"><span class="nav-number">2.1.</span> <span class="nav-text">单机版服务器启动</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#预启动"><span class="nav-number">2.1.1.</span> <span class="nav-text">预启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化"><span class="nav-number">2.1.2.</span> <span class="nav-text">初始化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集群版服务器启动"><span class="nav-number">2.2.</span> <span class="nav-text">集群版服务器启动</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#预启动-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">预启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化-1"><span class="nav-number">2.2.2.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Leader-选举"><span class="nav-number">2.2.3.</span> <span class="nav-text">Leader 选举</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Leader-和-Follower-启动期交互过程"><span class="nav-number">2.2.4.</span> <span class="nav-text">Leader 和 Follower 启动期交互过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Leader-和-Follower-启动"><span class="nav-number">2.2.5.</span> <span class="nav-text">Leader 和 Follower 启动</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lollipop</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

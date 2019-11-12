@@ -1,0 +1,838 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Zookeeper,分布式,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/apple-touch-icon.png?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="Session 指的是 ZooKeeper 服务器与客户端会话。在 ZooKeeper 中，一个客户端连接是指客户端和服务器之间的一个 TCP 长连接。客户端启动的时候，首先会与服务器建立一个 TCP 连接，从第一次连接建立开始，客户端会话的生命周期也开始了。通过这个连接，客户端能够通过心跳检测与服务器保持有效的会话，也能够向Zookeeper服务器发送请求并接受响应，同时还能够通过该连接接收来自">
+<meta name="keywords" content="Zookeeper,分布式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zookeeper Session机制">
+<meta property="og:url" content="http://yoursite.com/2019/01/12/Zookeeper-Session机制/index.html">
+<meta property="og:site_name" content="小白爬坑之旅">
+<meta property="og:description" content="Session 指的是 ZooKeeper 服务器与客户端会话。在 ZooKeeper 中，一个客户端连接是指客户端和服务器之间的一个 TCP 长连接。客户端启动的时候，首先会与服务器建立一个 TCP 连接，从第一次连接建立开始，客户端会话的生命周期也开始了。通过这个连接，客户端能够通过心跳检测与服务器保持有效的会话，也能够向Zookeeper服务器发送请求并接受响应，同时还能够通过该连接接收来自">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-01-12T06:57:54.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Zookeeper Session机制">
+<meta name="twitter:description" content="Session 指的是 ZooKeeper 服务器与客户端会话。在 ZooKeeper 中，一个客户端连接是指客户端和服务器之间的一个 TCP 长连接。客户端启动的时候，首先会与服务器建立一个 TCP 连接，从第一次连接建立开始，客户端会话的生命周期也开始了。通过这个连接，客户端能够通过心跳检测与服务器保持有效的会话，也能够向Zookeeper服务器发送请求并接受响应，同时还能够通过该连接接收来自">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/01/12/Zookeeper-Session机制/">
+
+
+
+
+
+  <title>Zookeeper Session机制 | 小白爬坑之旅</title>
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小白爬坑之旅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/12/Zookeeper-Session机制/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lollipop">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/AcFun.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小白爬坑之旅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Zookeeper Session机制
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-12T14:37:20+08:00">
+                2019-01-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">Zookeeper</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Session 指的是 ZooKeeper 服务器与客户端会话。在 ZooKeeper 中，一个客户端连接是指客户端和服务器之间的一个 TCP 长连接。客户端启动的时候，首先会与服务器建立一个 TCP 连接，从第一次连接建立开始，客户端会话的生命周期也开始了。通过这个连接，客户端能够通过心跳检测与服务器保持有效的会话，也能够向Zookeeper服务器发送请求并接受响应，同时还能够通过该连接接收来自服务器的Watch事件通知。<a id="more"></a></p>
+<h2 id="会话创建"><a href="#会话创建" class="headerlink" title="会话创建"></a>会话创建</h2><h3 id="Session"><a href="#Session" class="headerlink" title="Session"></a>Session</h3><p>Session 是 Zookeeper 中的会话实体，代表一个客户端连接。其包含以下4个基本属性。</p>
+<ul>
+<li>SessionId：会话ID，唯一标识一个会话，每次客户端创建新会话的时候，Zookeeper 都会为其分配一个全局唯一的 SessionId。</li>
+<li>TimeOut：会话超时时间。客户端在构造 Zookeeper 实例的时候，会配置一个 sessionTimeOut 参数用于指定会话的超时时间。服务器会根据自己的超时时间限制最终确定会话的超时时间。</li>
+<li>TickTime：下次会话超时时间点。为了便于对会话实行 “分桶策略” 管理，同时也是为了高效低耗地实现会话的超时检查与清理，Zookeeper 会为每个会话标记一个下次会话超时时间点。TickTime是一个13位的 long 型数据，其值接近于当前时间加上 TimeOut，但不完全相等。</li>
+<li>isClosing：用于标记一个会话是否已经被关闭。通常当服务端检测到一个会话已经超时失效的时候，会将该属性标记为 “已关闭”，这样就能确保不再处理来自该会话的请求。</li>
+</ul>
+<h3 id="sessionId"><a href="#sessionId" class="headerlink" title="sessionId"></a>sessionId</h3><p>在 SessionTracker 初始化的时候，会调用 initializeNextSession 方法来生成一个初始化的 sessionId，之后在 Zookeeper 的正常运行过程中，会在该 sessionId 的基础上为每个会话进行分配，其初始化算法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">long</span> <span class="title">initializeNextSession</span><span class="params">(<span class="keyword">long</span> id)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> nextSid = <span class="number">0</span>;</span><br><span class="line">    nextSid = (System.currentTimeMillis() &lt;&lt; <span class="number">24</span>) &gt;&gt;&gt; <span class="number">8</span>;</span><br><span class="line">    nextSid =  nextSid | (id &lt;&lt;<span class="number">56</span>);</span><br><span class="line">    <span class="keyword">return</span> nextSid;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>算法结果可以概括为：<code>高8位确定了所在机器，后56位使用当前的毫秒表示进行随机。</code></p>
+<h3 id="SessionTracker"><a href="#SessionTracker" class="headerlink" title="SessionTracker"></a>SessionTracker</h3><p>SessionTracker 是 Zookeeper 服务端的会话管理器，负责会话的创建、管理和清理等工作。每一个会话在 SessionTracker 内部都保留了三份：</p>
+<ul>
+<li>sessionsById：这是一个 <code>HashMap&lt;Long, SessionImpl&gt;</code> 类型的数据结构，用来根据 sessionId 管理 Session 实体。</li>
+<li>sessionsWithTimeout：这是一个 <code>ConcurrentHashMap&lt;Long, Integer&gt;</code> 类型的数据结构，用于根据 sessionId 来管理会话的超时时间。该数据结构和 Zookeeper 内存数据库相连通，会被定期持久化到快照文件中去。</li>
+<li>sessionSets：这是一个 <code>HashMap&lt;Long, SessionSet&gt;</code> 类型的数据结构，用于根据下次会话超时时间点来归档会话，便于进行会话管理和超时检查。</li>
+</ul>
+<h3 id="创建连接"><a href="#创建连接" class="headerlink" title="创建连接"></a>创建连接</h3><p>服务端对于客户端的 “会话创建” 请求的处理，大体可以分为四个步骤，分别是<code>处理 ConnectRequest 请求、会话创建、处理器链路处理和会话响应</code>。</p>
+<ol>
+<li>首先将会由 NIOServerCnxn 来负责接收客户端的 “会话创建” 请求，并反序列化出 ConnectRequest 请求，然后根据 Zookeeper 服务端的配置完成会话超时时间的协商。</li>
+<li><p>随后 SessionTracker 会为该会话分配一个 sessionId，并将其注册到 sessionsById 和  sessionsWithTimeout 中去，同时进行会话的激活。</p>
+</li>
+<li><p>之后，该 “会话请求” 还会在服务端的各个请求处理器之间进行顺序流转，最终完成会话的创建。</p>
+</li>
+</ol>
+<h2 id="会话管理"><a href="#会话管理" class="headerlink" title="会话管理"></a>会话管理</h2><h3 id="分桶策略"><a href="#分桶策略" class="headerlink" title="分桶策略"></a>分桶策略</h3><p>所谓分桶策略，是指将类似的会话放在同一区块中进行管理，以便于 Zookeeper 对会话进行不同区块的隔离处理以及同一区块的统一处理。分配的原则是每个会话的 “下次超时时间点（nextExpirationTime）”。nextExpirationTime 是指该会话最近一次可能超时的时间点，对于一个新创建的会话而言，其会话创建完毕后，Zookeeper 就会为其计算 nextExpirationTime：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nextExpirationTime = CurrentTime + SessionTimeout</span><br></pre></td></tr></table></figure>
+<p>但是在 Zookeeper 的实际实现中，还做了一个处理。Zookeeper 的 Leader 服务器在运行期会定时地进行会话超时检查，其时间间隔是 expirationInterval，单位是毫秒，默认值是 tickTime 的值，即默认情况下，每隔 2000 毫秒进行一次会话超时检查。为了方便对多个会话同时进行超时检查，完成的 nextExpirationTime 计算方式如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nextExpirationTime = CurrentTime + SessionTimeout</span><br><span class="line">nextExpirationTime = (nextExpirationTime / expirationInterval + <span class="number">1</span>) * expirationInterval;</span><br></pre></td></tr></table></figure>
+<h3 id="会话激活"><a href="#会话激活" class="headerlink" title="会话激活"></a>会话激活</h3><p>为了保持客户端会话的有效性，在 Zookeeper 的运行过程中，客户端会在会话超时时间过期范围内向服务端发送 PING 请求来保持会话的有效性，俗称 “心跳检测”。同时，服务端需要不断的接收来自客户端的这个心跳检测，并且需要重新激活对应的客户端会话，我们将这个重新激活的过程称为 TouchSession。</p>
+<p>会话激活的过程，不仅能够使服务端检测到对应客户端会话的存活性，同时也能够让客户端自己保持连接状态。其主要流程如下：</p>
+<ol>
+<li><p><strong><em>检查该会话是否已经被关闭。</em></strong></p>
+<p>Leader 会检查该会话是否已经被关闭，如果已经被关闭，那么不再继续激活该会话。</p>
+</li>
+<li><p><strong><em>计算该会话新的超时时间 ExpirationTime_New。</em></strong></p>
+<p>如果该会话尚未关闭，那么就开始激活会话。首先需要计算出该会话下次超时时间点，使用的就是上面提到的公式。</p>
+</li>
+<li><p><strong><em>定位该会话当前的区块。</em></strong></p>
+<p>获取该会话老的超时时间 ExpirationTime_Old，并根据该超时时间来定位其所在的区块。</p>
+</li>
+<li><p><strong><em>迁移会话。</em></strong></p>
+<p>将该会话从老的区块中取出，放入 ExpirationTime_New 对应的新区块中。</p>
+</li>
+</ol>
+<p>实际上，在 Zookeeper 服务端的设计中，只要客户端有请求发送到服务端，包括读请求和写请求，那么就会触发一次会话激活。因此总的来讲，大体会出现以下两种情况的会话激活：</p>
+<ul>
+<li>只要客户端向服务端发送请求，包括读请求和写请求，那么就会触发一次会话激活。</li>
+<li>如果客户端发现在 sessionTimeout／3 时间内尚未和服务器进行过任何通信，即没有向服务端发送任何请求，那么就会主动发起一个 PING 请求，服务端收到该请求后，就会触发上述第一种情况的会话激活。</li>
+</ul>
+<h3 id="会话超时检查"><a href="#会话超时检查" class="headerlink" title="会话超时检查"></a>会话超时检查</h3><p>SessionTracker 中有一个单独的线程专门进行会话超时检查，我们称其为 “超时检查线程”，其工作机制的核心思路非常简单：<code>逐个依次地对会话桶中剩下的会话进行清理</code>。</p>
+<p>如果一个会话被激活，那么 Zookeeper 就会将其从上一个会话桶移到下一个会话桶中。于是上一个会话桶中留下的所有会话都是尚未被激活的。因此，超时检查线程的任务就是定时检查出这个会话桶中所有剩下的未被迁移的会话。</p>
+<p>那么超时检查线程是如何做到定时检查的呢？在会话分桶策略中，我们将 expirationInterval 的倍数作为时间点来分布会话，因此，超时检查线程只要在这些指定的时间点上进行检查即可，这样既提高了会话检查的效率，而且由于是批量清理，因此性能非常好。这也是为什么 Zookeeper 要通过分桶策略来管理客户端会话的最主要的原因。因为在实际生产环境中，一个 Zookeeper 集群的客户端会话数可能会非常多，逐个依次检查会话的方式会非常耗费时间。</p>
+<h2 id="会话清理"><a href="#会话清理" class="headerlink" title="会话清理"></a>会话清理</h2><p>当 SessionTracker 的会话超时检查线程整理出一些已经过期的会话后，那么就要开始进行会话清理了。步骤大致如下：</p>
+<ol>
+<li><p><strong><em>标记会话状态为 “已关闭”。</em></strong></p>
+<p>为了保证会话清理过程中不再处理来自该客户端的新请求，SessionTracker 会首先将会话的 isClosing 属性标记为 true。这样，即使在会话清理期间接收到客户端的新请求，也无法继续处理了。</p>
+</li>
+<li><p><strong><em>发起 “会话关闭” 请求。</em></strong></p>
+<p>为了使对该会话的关闭操作在整个服务端集群中都生效，Zookeeper 使用了提交 “会话关闭” 请求的方式，并立即交付给 PrepRequestProcessor 处理器进行处理。</p>
+</li>
+<li><p><strong><em>收集需要清理的临时节点。</em></strong></p>
+<p>在 Zookeeper 内存数据库中，为每个会话都单独保存了一份由该会话维护的所有临时节点集合，因此在会话清理阶段，只需要根据当前即将关闭的会话的 sessionId 从内存数据库中取到这份临时节点列表即可。</p>
+<p>但是，在实际应用场景中，有如下的细节需要处理：在 Zookeeper 处理会话关闭请求之前，正好有以下两类请求到达了服务端并正在处理中。</p>
+<ul>
+<li>节点删除请求，删除的目标节点正好是上述临时节点中的一个。</li>
+<li>临时节点创建请求，创建的目标正好是上述临时节点中的一个。</li>
+</ul>
+<p>对于这两类请求，其共同点都是事务处理尚未完成，因此还没有应用到内存数据库中，所以上述获取到的临时节点列表在遇到这两类事物请求的时候，会出现不一致的情况。</p>
+<p>假如我们当前获取到的临时节点列表是 ephemerals，那么针对第一类请求，我们需要将所有这些请求对于的数据节点路径从 ephemerals 中移除，以避免重复删除。针对第二类请求，我们需要将所有这些请求对应的数据节点路径添加到 ephemerals 中去，以删除这些即将会被创建但是尚未保存到内存数据库中去的临时节点。</p>
+</li>
+<li><p><strong><em>添加 “节点删除” 事务变更。</em></strong></p>
+<p>完成该会话相关的临时节点收集后，Zookeeper 会逐个将这些临时节点转换成 “节点删除” 请求，并放入事务变更队列 outstandingChanges 中去。</p>
+</li>
+<li><p><strong><em>删除临时节点。</em></strong></p>
+<p>创建了对应的 “节点删除” 请求，FinalRequestProcessor 处理器会触发内存数据库，删除该会话对应的所有临时节点。</p>
+</li>
+<li><p><strong><em>移除会话。</em></strong></p>
+<p>完成节点删除后，需要将会话从 SessionTracker 中移除，主要就是上面提到的三个数据结构（sessionsById、sessionWithTimeout 和 sessionSets）中将该会话移除掉。</p>
+</li>
+<li><p><strong><em>关闭 NIOServerCnxn。</em></strong></p>
+<p>最后，从 NIOServerCnxnFactory 找到该会话对应的 NIOServerCnxn，将其关闭。</p>
+</li>
+</ol>
+<h2 id="重连"><a href="#重连" class="headerlink" title="重连"></a>重连</h2><p>当客户端和服务端之间的网络连接断开时，Zookeeper 客户端会自动进行反复的重连，直到最终成功连接上 Zookeeper 集群中的一台机器。在这种情况下，再次连接上服务端的客户端可能会处于以下两种状态之一。</p>
+<ul>
+<li><strong>CONNECTED</strong>：如果在会话超时时间内重新连接上 Zookeeper 集群中任意一台机器，那么被视为重连成功。</li>
+<li><strong>EXPIRED</strong>：如果是在会话超时时间以外重新连接上，那么服务端其实已经对该会话进行了会话清理操作，因此在此连接上的会话将被视为非法会话。</li>
+</ul>
+<p>由于存在心跳检测来反复地进行会话激活，因此，在正常情况下，客户端会话一直是有效的。然而，当客户端与服务端之间的连接断开后，用户在客户端可能主要会看到两类异常：CONNECTION_LOSS（连接断开）和 SESSION_EXPIRED（会话过期）。那么该如何正确处理呢？</p>
+<h3 id="连接断开"><a href="#连接断开" class="headerlink" title="连接断开"></a>连接断开</h3><p>在客户端与服务器断开连接后，Zookeeper 客户端会自动从地址列表重新逐个选取新的地址并尝试进行重新连接，直到最终成功连接上服务器。</p>
+<p>举个例子，假设某个应用在使用 Zookeeper 客户端进行 setData 操作的时候，正好出现了 CONNECTION_LOSS 现象，那么客户端会立即接收到 None-Disconnected 通知，同时会抛出异常：ConnectionLossException。在这种情况下，我们的应用要做的事情就是捕获住 ConnectionLossException ，然后等待 Zookeeper 客户端自动完成重连。一旦客户端成功连接上一台 Zookeeper 机器后，那么客户端就会收到 None-SyncConnected 通知，之后就可以重试刚刚出错的 setData 操作。</p>
+<h3 id="会话失效"><a href="#会话失效" class="headerlink" title="会话失效"></a>会话失效</h3><p>客户端和服务器连接断开之后，由于重连期间耗时过长，超过了会话超时时间（sessionTimeout）限制后还没有成功连接上服务器，那么服务器就认为这个会话已经结束了，就会开始进行会话清理。但是另一方面，客户端本身不知道会话已经失效，并且其客户端状态仍然是 DISCONNECTED。之后，如果客户端重新连接上了服务器，那么很不幸，服务器会告知客户端该会话已经失效（SESSION_EXPIRED）。在这种情况下，用户就需要重新实例话一个 Zookeeper 对象，并且看应用的负责情况，重新恢复临时数据。</p>
+<h3 id="会话转移"><a href="#会话转移" class="headerlink" title="会话转移"></a>会话转移</h3><p>假如客户端和服务器 S1 之间的连接断开后，如果通过尝试重连后，成功连接上新的服务器 S2 并且延续了有效会话，那么就可以说会话从服务器 S1 转移到了 S2 上。  </p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Zookeeper/" rel="tag"># Zookeeper</a>
+          
+            <a href="/tags/分布式/" rel="tag"># 分布式</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/12/Zookeeper-Watcher机制/" rel="next" title="Zookeeper Watcher 机制">
+                <i class="fa fa-chevron-left"></i> Zookeeper Watcher 机制
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/12/Zookeeper-客户端和服务端/" rel="prev" title="Zookeeper 客户端和服务端">
+                Zookeeper 客户端和服务端 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/AcFun.png" alt="Lollipop">
+          <p class="site-author-name" itemprop="name">Lollipop</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Jimmy2Angel" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:a1334416010@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#会话创建"><span class="nav-number">1.</span> <span class="nav-text">会话创建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Session"><span class="nav-number">1.1.</span> <span class="nav-text">Session</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sessionId"><span class="nav-number">1.2.</span> <span class="nav-text">sessionId</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SessionTracker"><span class="nav-number">1.3.</span> <span class="nav-text">SessionTracker</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建连接"><span class="nav-number">1.4.</span> <span class="nav-text">创建连接</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#会话管理"><span class="nav-number">2.</span> <span class="nav-text">会话管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分桶策略"><span class="nav-number">2.1.</span> <span class="nav-text">分桶策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#会话激活"><span class="nav-number">2.2.</span> <span class="nav-text">会话激活</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#会话超时检查"><span class="nav-number">2.3.</span> <span class="nav-text">会话超时检查</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#会话清理"><span class="nav-number">3.</span> <span class="nav-text">会话清理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重连"><span class="nav-number">4.</span> <span class="nav-text">重连</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#连接断开"><span class="nav-number">4.1.</span> <span class="nav-text">连接断开</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#会话失效"><span class="nav-number">4.2.</span> <span class="nav-text">会话失效</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#会话转移"><span class="nav-number">4.3.</span> <span class="nav-text">会话转移</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lollipop</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
